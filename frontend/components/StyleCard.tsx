@@ -1,7 +1,9 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { explainStyle } from "@/lib/api";
+import { saveLook } from "@/lib/look";
 import type { FaceShape } from "@/lib/faceTypes";
 import {
   type Angle,
@@ -28,6 +30,7 @@ export function StyleCard({
   llmEnabled: boolean;
   onTryOn: (style: StyleRecommendation) => void;
 }) {
+  const router = useRouter();
   const [angle, setAngle] = useState<Angle>("front");
   const [explanation, setExplanation] = useState(style.explanation);
   const [aiActive, setAiActive] = useState(false);
@@ -104,13 +107,25 @@ export function StyleCard({
             </button>
           ))}
         </div>
-        <button
-          type="button"
-          onClick={() => onTryOn(style)}
-          className="mt-2.5 w-full rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
-        >
-          Try this on me
-        </button>
+        <div className="mt-2.5 grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => onTryOn(style)}
+            className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+          >
+            Try this on
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              saveLook({ id: style.id, name: style.name });
+              router.push("/salons");
+            }}
+            className="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          >
+            Book this look
+          </button>
+        </div>
       </div>
 
       {/* Explanation */}

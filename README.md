@@ -130,10 +130,14 @@ the_cut_point/
 - [x] Phase 4 — LLM explanation layer (Groq)
 - [x] Phase 5 — Virtual try-on + download + try-another
 - [x] Phase 6 — Database + booking backend
-- [ ] Phase 7 — Auth + booking UI + "bring this look"
-- [ ] Phase 8 — Polish
-- [ ] Phase 9 — Local acceptance
-- [ ] Phase 10–12 — GitHub, deploy, final README
+- [x] Phase 7 — Two-sided auth (client + saloon) + multi-salon request/approve model
+- [x] Phase 8 — Client journey: nearby salons, booking + my-appointments, "bring this look"
+- [ ] Phase 9 — Saloon/barber dashboard (requests, accept/decline, revenue)
+- [ ] Phase 10 — Email notifications (Gmail SMTP)
+- [ ] Phase 11 — Realistic AI try-on (fal.ai Flux Kontext)
+- [ ] Phase 12 — 3D avatar (Ready Player Me)
+- [ ] Phase 13 — Polish · Phase 14 — Local acceptance
+- [ ] GitHub, deploy, final README
 
 ---
 
