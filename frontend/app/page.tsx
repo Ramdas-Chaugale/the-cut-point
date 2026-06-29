@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { BackendStatus } from "@/components/BackendStatus";
 
 export default function Home() {
@@ -17,12 +18,14 @@ export default function Home() {
           built locally, verified end to end.
         </p>
 
-        <BackendStatus />
+        <Link
+          href="/analyze"
+          className="rounded-md bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+        >
+          Analyse my face shape →
+        </Link>
 
-        <p className="text-sm text-zinc-400 dark:text-zinc-500">
-          Frontend (Next.js) and backend (FastAPI) are wired up. Feature
-          phases land next.
-        </p>
+        <BackendStatus />
       </main>
     </div>
   );
