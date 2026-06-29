@@ -1,18 +1,56 @@
 "use client";
 
 import { useState } from "react";
+import { explainStyle } from "@/lib/api";
+import type { FaceShape } from "@/lib/faceTypes";
 import {
   type Angle,
   ANGLE_LABELS,
+  type ExplainRequest,
   RATIONALE_LABELS,
   type StyleRecommendation,
 } from "@/lib/recommendTypes";
 
 const ANGLES: Angle[] = ["front", "left", "right", "back"];
 
-export function StyleCard({ style }: { style: StyleRecommendation }) {
+type Prefs = Omit<ExplainRequest, "style_id" | "face_shape">;
+
+export function StyleCard({
+  style,
+  faceShape,
+  prefs,
+  llmEnabled,
+}: {
+  style: StyleRecommendation;
+  faceShape: FaceShape;
+  prefs: Prefs;
+  llmEnabled: boolean;
+}) {
   const [angle, setAngle] = useState<Angle>("front");
+  const [explanation, setExplanation] = useState(style.explanation);
+  const [aiActive, setAiActive] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState(false);
   const matchPct = Math.round(style.match_score * 100);
+
+  const refineWithAi = async () => {
+    setAiLoading(true);
+    setAiError(false);
+    try {
+      const res = await explainStyle({
+        style_id: style.id,
+        face_shape: faceShape,
+        ...prefs,
+      });
+      setExplanation(res.explanation);
+      setAiActive(res.source === "llm");
+      if (res.source !== "llm") setAiError(true); // fell back server-side
+    } catch {
+      setAiError(true);
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   return (
     <div className="flex flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
@@ -67,9 +105,40 @@ export function StyleCard({ style }: { style: StyleRecommendation }) {
       </div>
 
       {/* Explanation */}
-      <p className="mt-3 px-4 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
-        {style.explanation}
-      </p>
+      <div className="mt-3 px-4">
+        <div className="mb-1 flex items-center gap-2">
+          {aiActive && (
+            <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-violet-700 dark:bg-violet-900/40 dark:text-violet-300">
+              AI
+            </span>
+          )}
+        </div>
+        <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+          {explanation}
+        </p>
+        {llmEnabled && !aiActive && (
+          <button
+            type="button"
+            onClick={refineWithAi}
+            disabled={aiLoading}
+            className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-violet-600 hover:text-violet-500 disabled:opacity-60 dark:text-violet-400"
+          >
+            {aiLoading ? (
+              <>
+                <span className="h-3 w-3 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+                Writing…
+              </>
+            ) : (
+              <>✨ Refine with AI</>
+            )}
+          </button>
+        )}
+        {aiError && (
+          <p className="mt-1 text-[11px] text-amber-600 dark:text-amber-400">
+            AI is unavailable right now — showing the standard explanation.
+          </p>
+        )}
+      </div>
 
       {/* Rationale chips */}
       <div className="mt-3 flex flex-wrap gap-1.5 px-4">

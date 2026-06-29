@@ -120,3 +120,21 @@ class RecommendResponse(BaseModel):
     face_shape: FaceShape
     count: int
     recommendations: list[StyleRecommendation]
+
+
+class ExplainRequest(BaseModel):
+    """Ask for an LLM-enriched explanation of a single style."""
+
+    style_id: str
+    face_shape: FaceShape
+    presentation: Presentation | None = None
+    desired_length: Length | None = None
+    hair_type: HairType | None = None
+    maintenance: Maintenance | None = None
+
+
+class ExplainResponse(BaseModel):
+    style_id: str
+    explanation: str
+    source: str  # "llm" | "fallback"
+    cached: bool

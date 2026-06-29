@@ -3,7 +3,12 @@
  * Base URL comes from NEXT_PUBLIC_API_BASE_URL (see .env.local / .env.example).
  */
 import type { AnalyzeResponse } from "./faceTypes";
-import type { RecommendRequest, RecommendResponse } from "./recommendTypes";
+import type {
+  ExplainRequest,
+  ExplainResponse,
+  RecommendRequest,
+  RecommendResponse,
+} from "./recommendTypes";
 
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
@@ -91,4 +96,9 @@ export function analyzeFace(
 /** Fetch ranked hairstyle recommendations for a face shape + preferences. */
 export function recommend(req: RecommendRequest): Promise<RecommendResponse> {
   return apiPost<RecommendResponse>("/api/recommend", req);
+}
+
+/** Request an LLM-enriched explanation for a single style. */
+export function explainStyle(req: ExplainRequest): Promise<ExplainResponse> {
+  return apiPost<ExplainResponse>("/api/explain", req);
 }

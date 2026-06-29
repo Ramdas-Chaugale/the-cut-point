@@ -45,6 +45,22 @@ export interface RecommendResponse {
   recommendations: StyleRecommendation[];
 }
 
+export interface ExplainRequest {
+  style_id: string;
+  face_shape: FaceShape;
+  presentation?: Presentation;
+  desired_length?: Length;
+  hair_type?: HairType;
+  maintenance?: Maintenance;
+}
+
+export interface ExplainResponse {
+  style_id: string;
+  explanation: string;
+  source: "llm" | "fallback";
+  cached: boolean;
+}
+
 /** Short, human-friendly chip labels for rationale tags. */
 export const RATIONALE_LABELS: Record<string, string> = {
   "adds-height": "Adds height",

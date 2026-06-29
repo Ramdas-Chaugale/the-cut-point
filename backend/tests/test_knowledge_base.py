@@ -7,9 +7,7 @@ from pathlib import Path
 from app.knowledge.loader import load_styles
 from app.models.recommend import RATIONALE_TAGS, FaceShape
 
-_ASSET_ROOT = (
-    Path(__file__).resolve().parents[2] / "frontend" / "public" / "assets" / "hair"
-)
+_ASSET_ROOT = Path(__file__).resolve().parents[2] / "frontend" / "public" / "assets" / "hair"
 
 
 def test_kb_loads_and_is_nonempty() -> None:
