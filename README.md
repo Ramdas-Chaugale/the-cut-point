@@ -129,7 +129,7 @@ the_cut_point/
 - [x] Phase 3 — Multi-angle style views
 - [x] Phase 4 — LLM explanation layer (Groq)
 - [x] Phase 5 — Virtual try-on + download + try-another
-- [ ] Phase 6 — Database + booking backend
+- [x] Phase 6 — Database + booking backend
 - [ ] Phase 7 — Auth + booking UI + "bring this look"
 - [ ] Phase 8 — Polish
 - [ ] Phase 9 — Local acceptance
