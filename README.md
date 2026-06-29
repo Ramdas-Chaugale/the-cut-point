@@ -124,8 +124,8 @@ the_cut_point/
 ## Roadmap
 
 - [x] Phase 0 — Scaffold (local)
-- [ ] Phase 1 — Face analysis + bald/short-hair accuracy
-- [ ] Phase 2 — Recommendation engine + knowledge base
+- [x] Phase 1 — Face analysis + bald/short-hair accuracy
+- [x] Phase 2 — Recommendation engine + knowledge base
 - [ ] Phase 3 — Multi-angle style views
 - [ ] Phase 4 — LLM explanation layer (Groq)
 - [ ] Phase 5 — Virtual try-on + download + try-another
