@@ -86,6 +86,19 @@ class RecommendRequest(BaseModel):
     limit: int = Field(default=8, ge=1, le=28)
 
 
+class AngleAssets(BaseModel):
+    """Reference-image URLs for the four style-preview angles.
+
+    These are catalog silhouettes of the *style*, not a render of the user's
+    own head — the frontend labels them accordingly (vs. the try-on).
+    """
+
+    front: str
+    left: str
+    right: str
+    back: str
+
+
 class StyleRecommendation(BaseModel):
     """One ranked recommendation returned to the client."""
 
@@ -97,6 +110,7 @@ class StyleRecommendation(BaseModel):
     hair_types: list[HairType]
     rationale_tags: list[str]
     description: str
+    angle_assets: AngleAssets
     match_score: float  # 0..1, how well it fits the requested inputs
     matched_on: list[str]  # which preferences this style satisfied
     explanation: str  # rule-based "why it suits you" (LLM-enriched in Phase 4)
