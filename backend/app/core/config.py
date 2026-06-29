@@ -32,6 +32,18 @@ class Settings(BaseSettings):
     groq_api_key: str = ""
     groq_model: str = "llama-3.3-70b-versatile"
 
+    # --- Realistic AI try-on (fal.ai, Flux Kontext) ---
+    fal_key: str = ""
+    fal_model: str = "fal-ai/flux-pro/kontext"
+
+    # --- Email notifications (Gmail SMTP) ---
+    smtp_host: str = "smtp.gmail.com"
+    smtp_port: int = 587
+    smtp_user: str = ""  # full Gmail address
+    smtp_password: str = ""  # Gmail app password (not your normal password)
+    email_from: str = ""  # defaults to smtp_user if blank
+    email_from_name: str = "CutPoint"
+
     # --- Server / CORS ---
     backend_host: str = "0.0.0.0"
     backend_port: int = 8000
@@ -46,6 +58,21 @@ class Settings(BaseSettings):
     def llm_enabled(self) -> bool:
         """Whether a real LLM provider is configured."""
         return bool(self.groq_api_key.strip())
+
+    @property
+    def ai_tryon_enabled(self) -> bool:
+        """Whether realistic AI try-on (fal.ai) is configured."""
+        return bool(self.fal_key.strip())
+
+    @property
+    def email_enabled(self) -> bool:
+        """Whether email notifications (SMTP) are configured."""
+        return bool(self.smtp_user.strip() and self.smtp_password.strip())
+
+    @property
+    def email_sender(self) -> str:
+        """The From address, defaulting to the SMTP user."""
+        return self.email_from.strip() or self.smtp_user.strip()
 
 
 @lru_cache

@@ -39,4 +39,6 @@ def health() -> dict[str, object]:
         "service": "cutpoint-api",
         "version": app.version,
         "llm_enabled": settings.llm_enabled,
+        "ai_tryon_enabled": settings.ai_tryon_enabled,
+        "email_enabled": settings.email_enabled,
     }
