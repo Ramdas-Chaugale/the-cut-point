@@ -1,0 +1,35 @@
+"""CutPoint FastAPI application entrypoint."""
+
+from __future__ import annotations
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.core.config import get_settings
+
+settings = get_settings()
+
+app = FastAPI(
+    title="CutPoint API",
+    description="AI hairstyle recommendation & salon booking backend.",
+    version="0.1.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origin_list,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/health", tags=["meta"])
+def health() -> dict[str, object]:
+    """Liveness probe + basic capability flags for the frontend."""
+    return {
+        "status": "ok",
+        "service": "cutpoint-api",
+        "version": app.version,
+        "llm_enabled": settings.llm_enabled,
+    }

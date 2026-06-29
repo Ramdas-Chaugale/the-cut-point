@@ -1,0 +1,1 @@
+"""CutPoint backend application package."""

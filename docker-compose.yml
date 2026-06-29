@@ -1,0 +1,23 @@
+# Local development Postgres for CutPoint.
+# Usage:  docker compose up -d   (data persists in the named volume)
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: cutpoint-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cutpoint}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cutpoint}
+      POSTGRES_DB: ${POSTGRES_DB:-cutpoint}
+    ports:
+      - "5432:5432"
+    volumes:
+      - cutpoint_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cutpoint}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  cutpoint_pgdata:
