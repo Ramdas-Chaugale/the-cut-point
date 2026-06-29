@@ -17,7 +17,11 @@ type Status =
   | { kind: "done"; result: AnalyzeResponse }
   | { kind: "error"; message: string };
 
-export function FaceAnalyzer() {
+export function FaceAnalyzer({
+  onAnalyzed,
+}: {
+  onAnalyzed?: (result: AnalyzeResponse | null) => void;
+}) {
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   const [cameraOn, setCameraOn] = useState(false);
   const [hasImage, setHasImage] = useState(false);
@@ -74,6 +78,7 @@ export function FaceAnalyzer() {
     async (source: HTMLImageElement | HTMLCanvasElement, naturalW: number, naturalH: number) => {
       setStatus({ kind: "working", message: "Loading the face model…" });
       setHasImage(true);
+      onAnalyzed?.(null); // clear any previous recommendations
       // Show the image immediately while the model loads.
       renderToCanvas(source, naturalW, naturalH, null);
       try {
@@ -103,6 +108,7 @@ export function FaceAnalyzer() {
         setStatus({ kind: "working", message: "Analysing face shape…" });
         const result = await analyzeFace(detection.landmarks!, naturalW, naturalH);
         setStatus({ kind: "done", result });
+        onAnalyzed?.(result);
       } catch (err) {
         const message = (err as Error).message ?? "Something went wrong.";
         setStatus({
@@ -113,7 +119,7 @@ export function FaceAnalyzer() {
         });
       }
     },
-    [renderToCanvas],
+    [renderToCanvas, onAnalyzed],
   );
 
   const onFile = useCallback(
@@ -171,9 +177,10 @@ export function FaceAnalyzer() {
     stopCamera();
     setHasImage(false);
     setStatus({ kind: "idle" });
+    onAnalyzed?.(null);
     const canvas = canvasRef.current;
     canvas?.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
-  }, [stopCamera]);
+  }, [stopCamera, onAnalyzed]);
 
   const busy = status.kind === "working";
 

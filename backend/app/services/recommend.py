@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from app.knowledge.loader import load_styles
 from app.models.recommend import (
+    AngleAssets,
     Length,
     Maintenance,
     Presentation,
@@ -23,6 +24,20 @@ from app.models.recommend import (
     StyleRecommendation,
 )
 from app.services.explanations import build_rule_based_explanation
+
+# Frontend serves these static silhouettes from public/assets/hair/<id>/<angle>.svg
+_ASSET_BASE = "/assets/hair"
+
+
+def _angle_assets(style_id: str) -> AngleAssets:
+    base = f"{_ASSET_BASE}/{style_id}"
+    return AngleAssets(
+        front=f"{base}/front.svg",
+        left=f"{base}/left.svg",
+        right=f"{base}/right.svg",
+        back=f"{base}/back.svg",
+    )
+
 
 # Ordinal scales for "adjacency" scoring.
 _LENGTH_ORDER = {Length.short: 0, Length.medium: 1, Length.long: 2}
@@ -108,6 +123,7 @@ def recommend(req: RecommendRequest) -> RecommendResponse:
             hair_types=style.hair_types,
             rationale_tags=style.rationale_tags,
             description=style.description,
+            angle_assets=_angle_assets(style.id),
             match_score=round(score, 4),
             matched_on=matched,
             explanation=build_rule_based_explanation(style, req.face_shape),

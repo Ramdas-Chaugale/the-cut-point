@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FaceAnalyzer } from "@/components/FaceAnalyzer";
+import { AnalyzeWorkflow } from "@/components/AnalyzeWorkflow";
 
 export const metadata = {
   title: "Analyse your face shape — CutPoint",
@@ -27,7 +27,7 @@ export default function AnalyzePage() {
         </p>
       </header>
 
-      <FaceAnalyzer />
+      <AnalyzeWorkflow />
     </div>
   );
 }

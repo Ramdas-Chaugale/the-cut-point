@@ -36,6 +36,11 @@ _SHAPE_GOAL: dict[FaceShape, str] = {
 }
 
 
+def _article(word: str) -> str:
+    """'a' or 'an' for the following word."""
+    return "an" if word[:1].lower() in "aeiou" else "a"
+
+
 def _join(parts: list[str]) -> str:
     if not parts:
         return ""
@@ -49,9 +54,10 @@ def build_rule_based_explanation(style: Style, face_shape: FaceShape) -> str:
     phrases = [_TAG_PHRASES[t] for t in style.rationale_tags if t in _TAG_PHRASES]
     effects = _join(phrases)
     goal = _SHAPE_GOAL[face_shape]
+    article = _article(face_shape.value)
     if effects:
         return (
             f"The {style.name} {goal}: it {effects}. "
-            f"A solid match for a {face_shape.value} face shape."
+            f"A solid match for {article} {face_shape.value} face shape."
         )
-    return f"The {style.name} {goal} — a good fit for a {face_shape.value} face shape."
+    return f"The {style.name} {goal} — a good fit for {article} {face_shape.value} face shape."
