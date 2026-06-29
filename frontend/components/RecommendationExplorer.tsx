@@ -104,9 +104,6 @@ export function RecommendationExplorer({
 
   useEffect(() => {
     // Auto-fetch on mount and whenever the face shape / preferences change.
-    // setState only happens after the await inside fetchRecs (never synchronously
-    // in this effect), so the loading state is driven by the event handlers.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     void fetchRecs();
   }, [fetchRecs]);
 
