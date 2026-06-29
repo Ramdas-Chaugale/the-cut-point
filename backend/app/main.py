@@ -5,6 +5,7 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.auth import router as auth_router
 from app.api.booking import router as booking_router
 from app.api.face import router as face_router
 from app.api.recommend import router as recommend_router
@@ -29,6 +30,7 @@ app.add_middleware(
 app.include_router(face_router)
 app.include_router(recommend_router)
 app.include_router(booking_router)
+app.include_router(auth_router)
 
 
 @app.get("/health", tags=["meta"])

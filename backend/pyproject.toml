@@ -30,3 +30,7 @@ check_untyped_defs = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+filterwarnings = [
+    # python-jose uses datetime.utcnow internally (their code, not ours).
+    "ignore:datetime.datetime.utcnow:DeprecationWarning",
+]

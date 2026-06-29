@@ -1,8 +1,7 @@
 """Shared test fixtures: an in-memory SQLite session seeded for booking tests.
 
-Using SQLite keeps the test suite self-contained (no Postgres needed in CI).
-The booking service is database-agnostic, so the conflict logic is exercised
-exactly as in production.
+SQLite keeps the suite self-contained (no Postgres in CI); the booking service
+is database-agnostic, so the request/accept/decline logic runs as in production.
 """
 
 from __future__ import annotations
@@ -11,18 +10,20 @@ from datetime import date, time
 from typing import NamedTuple
 
 import pytest
-from app.models.tables import Service, Stylist, StylistAvailability, User
+from app.core.security import hash_password
+from app.models.tables import Salon, SalonAvailability, Service, User
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
 
-# A fixed Monday used across the booking tests.
+# A fixed Monday used across booking tests.
 MONDAY = date(2024, 1, 1)
 
 
 class Seed(NamedTuple):
-    user_id: int
+    client_id: int
+    owner_id: int
+    salon_id: int  # 1 chair, open Monday 09:00–12:00
     service_id: int  # 30-minute service
-    stylist_id: int  # available Monday 09:00–12:00
 
 
 @pytest.fixture
@@ -39,22 +40,55 @@ def session() -> Session:
 
 @pytest.fixture
 def seed(session: Session) -> Seed:
-    user = User(email="t@example.com", hashed_password="x", full_name="Test User")
-    service = Service(name="Classic Cut", description="d", duration_minutes=30, price_pennies=2000)
-    stylist = Stylist(name="Alex", bio="b")
-    session.add_all([user, service, stylist])
+    client = User(
+        email="client@test.com",
+        hashed_password=hash_password("password123"),
+        full_name="Test Client",
+        role="client",
+    )
+    owner = User(
+        email="owner@test.com",
+        hashed_password=hash_password("password123"),
+        full_name="Test Owner",
+        role="saloon",
+    )
+    session.add_all([client, owner])
     session.commit()
-    session.refresh(user)
+    session.refresh(client)
+    session.refresh(owner)
+
+    salon = Salon(
+        owner_id=owner.id,
+        name="Test Salon",
+        description="d",
+        address="1 Test St",
+        city="London",
+        latitude=51.5,
+        longitude=-0.1,
+        phone="020 7000 0000",
+        chairs=1,
+    )
+    session.add(salon)
+    session.commit()
+    session.refresh(salon)
+
+    service = Service(
+        salon_id=salon.id,
+        name="Classic Cut",
+        description="d",
+        duration_minutes=30,
+        price_pennies=2000,
+    )
+    session.add(service)
+    session.commit()
     session.refresh(service)
-    session.refresh(stylist)
+
     session.add(
-        StylistAvailability(
-            stylist_id=stylist.id,
-            day_of_week=0,  # Monday
-            start_time=time(9, 0),
-            end_time=time(12, 0),
+        SalonAvailability(
+            salon_id=salon.id, day_of_week=0, start_time=time(9, 0), end_time=time(12, 0)
         )
     )
     session.commit()
-    assert user.id and service.id and stylist.id
-    return Seed(user_id=user.id, service_id=service.id, stylist_id=stylist.id)
+
+    assert client.id and owner.id and salon.id and service.id
+    return Seed(client_id=client.id, owner_id=owner.id, salon_id=salon.id, service_id=service.id)
