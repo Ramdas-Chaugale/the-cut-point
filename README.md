@@ -127,7 +127,7 @@ the_cut_point/
 - [x] Phase 1 — Face analysis + bald/short-hair accuracy
 - [x] Phase 2 — Recommendation engine + knowledge base
 - [x] Phase 3 — Multi-angle style views
-- [ ] Phase 4 — LLM explanation layer (Groq)
+- [x] Phase 4 — LLM explanation layer (Groq)
 - [ ] Phase 5 — Virtual try-on + download + try-another
 - [ ] Phase 6 — Database + booking backend
 - [ ] Phase 7 — Auth + booking UI + "bring this look"

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { recommend } from "@/lib/api";
+import { getHealth, recommend } from "@/lib/api";
 import type { FaceShape } from "@/lib/faceTypes";
 import type {
   HairType,
@@ -56,6 +56,25 @@ export function RecommendationExplorer({ faceShape }: { faceShape: FaceShape }) 
   const [items, setItems] = useState<StyleRecommendation[]>([]);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [error, setError] = useState("");
+  const [llmEnabled, setLlmEnabled] = useState(false);
+
+  // Detect whether the backend has an LLM key, to decide if we offer AI refine.
+  useEffect(() => {
+    let active = true;
+    getHealth()
+      .then((h) => active && setLlmEnabled(h.llm_enabled))
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const cleanPrefs = {
+    presentation: prefs.presentation || undefined,
+    desired_length: prefs.desired_length || undefined,
+    hair_type: prefs.hair_type || undefined,
+    maintenance: prefs.maintenance || undefined,
+  };
 
   const fetchRecs = useCallback(async () => {
     // Status is set to "loading" by the caller (mount = initial state, or a
@@ -173,7 +192,13 @@ export function RecommendationExplorer({ faceShape }: { faceShape: FaceShape }) 
         {status === "ready" && items.length > 0 && (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((style) => (
-              <StyleCard key={style.id} style={style} />
+              <StyleCard
+                key={style.id}
+                style={style}
+                faceShape={faceShape}
+                prefs={cleanPrefs}
+                llmEnabled={llmEnabled}
+              />
             ))}
           </div>
         )}
