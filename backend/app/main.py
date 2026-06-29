@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.face import router as face_router
+from app.api.recommend import router as recommend_router
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -25,6 +26,7 @@ app.add_middleware(
 )
 
 app.include_router(face_router)
+app.include_router(recommend_router)
 
 
 @app.get("/health", tags=["meta"])
