@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { analyzeFace } from "@/lib/api";
 import { detectFace } from "@/lib/mediapipe";
-import type { AnalyzeResponse } from "@/lib/faceTypes";
+import type { AnalysisPayload, AnalyzeResponse } from "@/lib/faceTypes";
 import { FaceResult } from "./FaceResult";
 
 // The 8 bone-structure landmarks the classifier actually measures
@@ -20,7 +20,7 @@ type Status =
 export function FaceAnalyzer({
   onAnalyzed,
 }: {
-  onAnalyzed?: (result: AnalyzeResponse | null) => void;
+  onAnalyzed?: (payload: AnalysisPayload | null) => void;
 }) {
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   const [cameraOn, setCameraOn] = useState(false);
@@ -107,8 +107,21 @@ export function FaceAnalyzer({
         renderToCanvas(source, naturalW, naturalH, detection.points);
         setStatus({ kind: "working", message: "Analysing face shape…" });
         const result = await analyzeFace(detection.landmarks!, naturalW, naturalH);
+        // Snapshot the photo at natural size so the try-on can reuse it
+        // without re-uploading.
+        const snap = document.createElement("canvas");
+        snap.width = naturalW;
+        snap.height = naturalH;
+        snap.getContext("2d")?.drawImage(source, 0, 0, naturalW, naturalH);
+        const photo = snap.toDataURL("image/jpeg", 0.9);
         setStatus({ kind: "done", result });
-        onAnalyzed?.(result);
+        onAnalyzed?.({
+          result,
+          photo,
+          points: detection.points!,
+          width: naturalW,
+          height: naturalH,
+        });
       } catch (err) {
         const message = (err as Error).message ?? "Something went wrong.";
         setStatus({

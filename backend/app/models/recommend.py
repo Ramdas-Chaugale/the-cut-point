@@ -111,6 +111,7 @@ class StyleRecommendation(BaseModel):
     rationale_tags: list[str]
     description: str
     angle_assets: AngleAssets
+    try_on_overlay: str  # transparent front-hair PNG/SVG for the canvas try-on
     match_score: float  # 0..1, how well it fits the requested inputs
     matched_on: list[str]  # which preferences this style satisfied
     explanation: str  # rule-based "why it suits you" (LLM-enriched in Phase 4)

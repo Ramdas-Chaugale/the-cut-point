@@ -25,6 +25,15 @@ export interface AnalyzeResponse {
   quality: { face_size_ratio: number; warnings: string[] };
 }
 
+/** Everything the try-on needs: the analysis plus the source photo + landmarks. */
+export interface AnalysisPayload {
+  result: AnalyzeResponse;
+  photo: string; // data URL of the source image at natural size
+  points: { x: number; y: number; z: number }[]; // normalized MediaPipe landmarks
+  width: number;
+  height: number;
+}
+
 /** Human-friendly labels for the measured ratios. */
 export const RATIO_LABELS: Record<keyof AnalyzeResponse["ratios"], string> = {
   length_to_width: "Face length ÷ width",
