@@ -12,9 +12,47 @@ import {
 
 let landmarkerPromise: Promise<FaceLandmarker> | null = null;
 
+/**
+ * MediaPipe's WASM runtime prints benign TFLite/glog INFO and warning lines to
+ * stderr, which Emscripten routes to console.error/console.warn. These are not
+ * application errors (detection works fine), but the Next.js dev overlay flags
+ * any console.error as an "issue". Filter out only these known-benign lines so
+ * genuine errors still surface.
+ */
+let consoleFiltered = false;
+function filterMediaPipeLogs(): void {
+  if (consoleFiltered) return;
+  consoleFiltered = true;
+  const NOISE = [
+    "Created TensorFlow Lite XNNPACK delegate",
+    "Sets FaceBlendshapesGraph acceleration",
+    "OpenGL error checking is disabled",
+    "feedback manager requires",
+    "GL version",
+  ];
+  // glog lines look like "W0629 09:08:08.606000 ...". Also drop plain "INFO:".
+  const isNoise = (args: unknown[]): boolean => {
+    const first = args[0];
+    if (typeof first !== "string") return false;
+    return (
+      first.startsWith("INFO:") ||
+      /^[WIE]\d{4}\s/.test(first) ||
+      NOISE.some((n) => first.includes(n))
+    );
+  };
+  for (const level of ["error", "warn", "info"] as const) {
+    const original = console[level].bind(console);
+    console[level] = (...args: unknown[]) => {
+      if (isNoise(args)) return;
+      original(...args);
+    };
+  }
+}
+
 /** Lazily create a singleton FaceLandmarker in IMAGE mode (detects up to 2 faces). */
 export function getFaceLandmarker(): Promise<FaceLandmarker> {
   if (!landmarkerPromise) {
+    filterMediaPipeLogs();
     landmarkerPromise = (async () => {
       const fileset = await FilesetResolver.forVisionTasks("/mediapipe/wasm");
       return FaceLandmarker.createFromOptions(fileset, {
