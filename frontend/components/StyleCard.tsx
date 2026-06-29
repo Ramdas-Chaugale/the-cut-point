@@ -20,11 +20,13 @@ export function StyleCard({
   faceShape,
   prefs,
   llmEnabled,
+  onTryOn,
 }: {
   style: StyleRecommendation;
   faceShape: FaceShape;
   prefs: Prefs;
   llmEnabled: boolean;
+  onTryOn: (style: StyleRecommendation) => void;
 }) {
   const [angle, setAngle] = useState<Angle>("front");
   const [explanation, setExplanation] = useState(style.explanation);
@@ -102,6 +104,13 @@ export function StyleCard({
             </button>
           ))}
         </div>
+        <button
+          type="button"
+          onClick={() => onTryOn(style)}
+          className="mt-2.5 w-full rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+        >
+          Try this on me
+        </button>
       </div>
 
       {/* Explanation */}

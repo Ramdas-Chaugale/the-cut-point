@@ -124,6 +124,7 @@ def recommend(req: RecommendRequest) -> RecommendResponse:
             rationale_tags=style.rationale_tags,
             description=style.description,
             angle_assets=_angle_assets(style.id),
+            try_on_overlay=f"{_ASSET_BASE}/{style.id}/overlay.svg",
             match_score=round(score, 4),
             matched_on=matched,
             explanation=build_rule_based_explanation(style, req.face_shape),

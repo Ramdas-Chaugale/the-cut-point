@@ -134,31 +134,23 @@ def _shoulders() -> str:
     return f'<path d="M28,260 C40,206 70,192 100,192 C130,192 160,206 172,260 Z" fill="{GARMENT}"/>'
 
 
-def front(p: Hair) -> str:
-    cx = 100.0
-    top = 52 - p.top
-    half = 40 + p.full
-    e: list[str] = []
-
-    # hair back mass (length + fullness), behind the face
+def _hair_back(p: Hair, cx: float, top: float, half: float) -> list[str]:
+    """The hair mass behind the head (length + fullness)."""
     if p.afro:
-        e.append(_curly_edge(cx, 96, half, half, 22))
-    elif not p.buzz:
-        e.append(
-            f'<path d="M{cx-half},96 C{cx-half},{top} {cx+half},{top} {cx+half},96 '
-            f"L{cx+half},{p.side} C{cx+half},{p.side+18} {cx-half},{p.side+18} "
-            f'{cx-half},{p.side} Z" fill="{HAIR}"/>'
-        )
-
-    e.append(_shoulders())
-    e.append(f'<rect x="86" y="146" width="28" height="42" rx="11" fill="{SKIN}"/>')
-    e.append(f'<ellipse cx="{cx}" cy="104" rx="40" ry="52" fill="{SKIN}"/>')
-    e.append(f'<ellipse cx="60" cy="112" rx="7" ry="11" fill="{SKIN_SHADE}"/>')
-    e.append(f'<ellipse cx="140" cy="112" rx="7" ry="11" fill="{SKIN_SHADE}"/>')
-
-    # top cap / hairline over the scalp
+        return [_curly_edge(cx, 96, half, half, 22)]
     if p.buzz:
-        # filled cap following the skull arc down to the hairline
+        return []
+    return [
+        f'<path d="M{cx-half},96 C{cx-half},{top} {cx+half},{top} {cx+half},96 '
+        f"L{cx+half},{p.side} C{cx+half},{p.side+18} {cx-half},{p.side+18} "
+        f'{cx-half},{p.side} Z" fill="{HAIR}"/>'
+    ]
+
+
+def _hair_top(p: Hair, cx: float, top: float) -> list[str]:
+    """The hair over the scalp: cap, fringe and any special features."""
+    e: list[str] = []
+    if p.buzz:
         e.append(f'<path d="M63,86 A40,52 0 0 1 137,86 C118,81 82,81 63,86 Z" fill="{HAIR}"/>')
     elif not p.afro:
         capw = 44.0
@@ -168,7 +160,6 @@ def front(p: Hair) -> str:
             f'C{cx+22},{brow} {cx-22},{brow} {cx-capw},90 Z" fill="{HAIR}"/>'
         )
 
-    # fringe over the forehead
     if p.fringe >= 0.4 and not p.buzz and not p.afro:
         fy = 70 + p.fringe * 26
         if p.part == "center":
@@ -186,7 +177,6 @@ def front(p: Hair) -> str:
                 f'L{cx+44},78 L{cx-44},80 Z" fill="{HAIR}"/>'
             )
 
-    # specials
     if p.pomp:
         e.append(
             f'<path d="M{cx-38},90 C{cx-34},{top-12} {cx+34},{top-12} {cx+38},90 Z" fill="{HAIR}"/>'
@@ -202,6 +192,35 @@ def front(p: Hair) -> str:
             e.append(
                 f'<rect x="{cx+i*11-2:.1f}" y="56" width="4" height="36" rx="2" fill="{HAIR}"/>'
             )
+    return e
+
+
+def front(p: Hair) -> str:
+    cx = 100.0
+    top = 52 - p.top
+    half = 40 + p.full
+    e: list[str] = []
+    e += _hair_back(p, cx, top, half)
+    e.append(_shoulders())
+    e.append(f'<rect x="86" y="146" width="28" height="42" rx="11" fill="{SKIN}"/>')
+    e.append(f'<ellipse cx="{cx}" cy="104" rx="40" ry="52" fill="{SKIN}"/>')
+    e.append(f'<ellipse cx="60" cy="112" rx="7" ry="11" fill="{SKIN_SHADE}"/>')
+    e.append(f'<ellipse cx="140" cy="112" rx="7" ry="11" fill="{SKIN_SHADE}"/>')
+    e += _hair_top(p, cx, top)
+    return _svg("\n".join(e))
+
+
+def overlay(p: Hair) -> str:
+    """Front hair only, transparent — the virtual try-on overlay.
+
+    Reference frame matches front(): the face fills an ellipse centred at
+    (100,104) with rx=40, so the cheekbones sit at (60,104) and (140,104).
+    The try-on anchors those two points onto the user's cheekbone landmarks.
+    """
+    cx = 100.0
+    top = 52 - p.top
+    half = 40 + p.full
+    e = _hair_back(p, cx, top, half) + _hair_top(p, cx, top)
     return _svg("\n".join(e))
 
 
@@ -346,7 +365,8 @@ def generate() -> None:
         (out / "right.svg").write_text(right, encoding="utf-8")
         (out / "left.svg").write_text(mirror(right), encoding="utf-8")
         (out / "back.svg").write_text(back(fam), encoding="utf-8")
-        count += 4
+        (out / "overlay.svg").write_text(overlay(fam), encoding="utf-8")
+        count += 5
     print(f"Generated {count} SVGs for {len(kb_ids)} styles into {OUT_DIR}")
 
 

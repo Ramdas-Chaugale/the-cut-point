@@ -34,6 +34,7 @@ export interface StyleRecommendation {
   rationale_tags: string[];
   description: string;
   angle_assets: AngleAssets;
+  try_on_overlay: string;
   match_score: number;
   matched_on: string[];
   explanation: string;

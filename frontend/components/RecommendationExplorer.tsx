@@ -51,7 +51,13 @@ function Select<T extends string>({
   );
 }
 
-export function RecommendationExplorer({ faceShape }: { faceShape: FaceShape }) {
+export function RecommendationExplorer({
+  faceShape,
+  onTryOn,
+}: {
+  faceShape: FaceShape;
+  onTryOn: (style: StyleRecommendation) => void;
+}) {
   const [prefs, setPrefs] = useState<Prefs>(EMPTY);
   const [items, setItems] = useState<StyleRecommendation[]>([]);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
@@ -198,6 +204,7 @@ export function RecommendationExplorer({ faceShape }: { faceShape: FaceShape }) 
                 faceShape={faceShape}
                 prefs={cleanPrefs}
                 llmEnabled={llmEnabled}
+                onTryOn={onTryOn}
               />
             ))}
           </div>

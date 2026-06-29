@@ -30,10 +30,10 @@ def test_all_rationale_tags_are_known() -> None:
         assert set(style.rationale_tags) <= RATIONALE_TAGS
 
 
-def test_every_style_has_four_angle_assets() -> None:
-    # The generated silhouettes must exist for every style and angle, or the
-    # recommendation UI would show broken images. Run tools/generate_hair_assets.py.
+def test_every_style_has_angle_and_overlay_assets() -> None:
+    # The generated silhouettes (4 angles + try-on overlay) must exist for every
+    # style, or the UI would show broken images. Run tools/generate_hair_assets.py.
     for style in load_styles():
-        for angle in ("front", "left", "right", "back"):
-            asset = _ASSET_ROOT / style.id / f"{angle}.svg"
+        for name in ("front", "left", "right", "back", "overlay"):
+            asset = _ASSET_ROOT / style.id / f"{name}.svg"
             assert asset.is_file(), f"Missing asset: {asset}"
