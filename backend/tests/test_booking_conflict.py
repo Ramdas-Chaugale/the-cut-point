@@ -1,10 +1,11 @@
-"""Booking conflict + lifecycle tests — the core 'no double-booking' guarantee."""
+"""Request/accept/decline flow + the no-double-booking (capacity) guarantee."""
 
 from __future__ import annotations
 
 from datetime import datetime
 
 import pytest
+from app.models.tables import CONFIRMED, DECLINED, PENDING
 from app.services import booking as svc
 from sqlmodel import Session
 
@@ -15,113 +16,88 @@ def _at(hour: int, minute: int = 0) -> datetime:
     return datetime.combine(MONDAY, datetime.min.time()).replace(hour=hour, minute=minute)
 
 
-def test_create_booking_succeeds(session: Session, seed: Seed) -> None:
-    b = svc.create_booking(
+def _request(session: Session, seed: Seed, hour: int, minute: int = 0):
+    return svc.request_booking(
         session,
-        user_id=seed.user_id,
-        stylist_id=seed.stylist_id,
+        client_id=seed.client_id,
+        salon_id=seed.salon_id,
         service_id=seed.service_id,
-        start_at=_at(10),
+        start_at=_at(hour, minute),
     )
-    assert b.id is not None
+
+
+def test_request_creates_pending(session: Session, seed: Seed) -> None:
+    b = _request(session, seed, 10)
+    assert b.status == PENDING
     assert b.end_at == _at(10, 30)
-    assert b.status == "confirmed"
 
 
-def test_overlapping_booking_is_rejected(session: Session, seed: Seed) -> None:
-    svc.create_booking(
-        session,
-        user_id=seed.user_id,
-        stylist_id=seed.stylist_id,
-        service_id=seed.service_id,
-        start_at=_at(10),
-    )
-    # 10:15 overlaps the 10:00–10:30 booking.
+def test_pending_requests_do_not_consume_capacity(session: Session, seed: Seed) -> None:
+    # Two clients can both request the same slot; capacity is only used on accept.
+    _request(session, seed, 10)
+    b2 = _request(session, seed, 10)
+    assert b2.status == PENDING
+
+
+def test_accept_confirms_and_fills_capacity(session: Session, seed: Seed) -> None:
+    b1 = _request(session, seed, 10)
+    b2 = _request(session, seed, 10)
+    accepted = svc.accept_booking(session, seed.owner_id, b1.id)
+    assert accepted.status == CONFIRMED
+    # Salon has 1 chair, so the overlapping second request can't be accepted.
     with pytest.raises(svc.BookingError):
-        svc.create_booking(
-            session,
-            user_id=seed.user_id,
-            stylist_id=seed.stylist_id,
-            service_id=seed.service_id,
-            start_at=_at(10, 15),
-        )
+        svc.accept_booking(session, seed.owner_id, b2.id)
 
 
-def test_back_to_back_bookings_allowed(session: Session, seed: Seed) -> None:
-    svc.create_booking(
-        session,
-        user_id=seed.user_id,
-        stylist_id=seed.stylist_id,
-        service_id=seed.service_id,
-        start_at=_at(10),
-    )
-    # 10:30 starts exactly when the previous ends — no overlap.
-    b = svc.create_booking(
-        session,
-        user_id=seed.user_id,
-        stylist_id=seed.stylist_id,
-        service_id=seed.service_id,
-        start_at=_at(10, 30),
-    )
-    assert b.id is not None
-
-
-def test_booking_outside_working_hours_rejected(session: Session, seed: Seed) -> None:
-    # 08:00 is before the 09:00 window start.
+def test_request_rejected_when_slot_full(session: Session, seed: Seed) -> None:
+    b1 = _request(session, seed, 10)
+    svc.accept_booking(session, seed.owner_id, b1.id)
+    # Now a confirmed booking fills the only chair — new overlapping request fails.
     with pytest.raises(svc.BookingError):
-        svc.create_booking(
-            session,
-            user_id=seed.user_id,
-            stylist_id=seed.stylist_id,
-            service_id=seed.service_id,
-            start_at=_at(8),
-        )
-    # 11:45 + 30min would end at 12:15, past the 12:00 window end.
+        _request(session, seed, 10, 15)
+
+
+def test_back_to_back_allowed(session: Session, seed: Seed) -> None:
+    b1 = _request(session, seed, 10)
+    svc.accept_booking(session, seed.owner_id, b1.id)
+    b2 = _request(session, seed, 10, 30)  # starts as the first ends
+    assert b2.status == PENDING
+
+
+def test_out_of_hours_rejected(session: Session, seed: Seed) -> None:
     with pytest.raises(svc.BookingError):
-        svc.create_booking(
-            session,
-            user_id=seed.user_id,
-            stylist_id=seed.stylist_id,
-            service_id=seed.service_id,
-            start_at=_at(11, 45),
-        )
-
-
-def test_cancel_frees_the_slot(session: Session, seed: Seed) -> None:
-    b = svc.create_booking(
-        session,
-        user_id=seed.user_id,
-        stylist_id=seed.stylist_id,
-        service_id=seed.service_id,
-        start_at=_at(10),
-    )
-    # Slot is taken now.
-    assert svc.has_conflict(session, seed.stylist_id, _at(10), _at(10, 30))
-    svc.cancel_booking(session, b.id, seed.user_id)
-    # Slot is free again after cancellation.
-    assert not svc.has_conflict(session, seed.stylist_id, _at(10), _at(10, 30))
-
-
-def test_cancel_requires_ownership(session: Session, seed: Seed) -> None:
-    b = svc.create_booking(
-        session,
-        user_id=seed.user_id,
-        stylist_id=seed.stylist_id,
-        service_id=seed.service_id,
-        start_at=_at(10),
-    )
+        _request(session, seed, 8)  # before 09:00
     with pytest.raises(svc.BookingError):
-        svc.cancel_booking(session, b.id, user_id=seed.user_id + 999)
+        _request(session, seed, 11, 45)  # would end 12:15, past 12:00
 
 
-def test_list_user_bookings(session: Session, seed: Seed) -> None:
-    svc.create_booking(
-        session,
-        user_id=seed.user_id,
-        stylist_id=seed.stylist_id,
-        service_id=seed.service_id,
-        start_at=_at(10),
+def test_decline_with_suggestion(session: Session, seed: Seed) -> None:
+    b = _request(session, seed, 10)
+    declined = svc.decline_booking(session, seed.owner_id, b.id, suggested_start_at=_at(11))
+    assert declined.status == DECLINED
+    assert declined.suggested_start_at == _at(11)
+
+
+def test_accept_requires_ownership(session: Session, seed: Seed) -> None:
+    b = _request(session, seed, 10)
+    with pytest.raises(svc.BookingError):
+        svc.accept_booking(session, seed.owner_id + 999, b.id)
+
+
+def test_cancel_frees_capacity(session: Session, seed: Seed) -> None:
+    b = _request(session, seed, 10)
+    svc.accept_booking(session, seed.owner_id, b.id)
+    assert not svc.has_capacity(
+        session, svc.get_salon(session, seed.salon_id), _at(10), _at(10, 30)
     )
-    bookings = svc.list_user_bookings(session, seed.user_id)
-    assert len(bookings) == 1
-    assert svc.list_user_bookings(session, seed.user_id + 999) == []
+    svc.cancel_booking(session, seed.client_id, b.id)
+    assert svc.has_capacity(session, svc.get_salon(session, seed.salon_id), _at(10), _at(10, 30))
+
+
+def test_stats(session: Session, seed: Seed) -> None:
+    b = _request(session, seed, 10)
+    svc.accept_booking(session, seed.owner_id, b.id)
+    stats = svc.salon_stats(session, seed.salon_id, now=_at(9))
+    assert stats["upcoming_confirmed"] == 1
+    assert stats["revenue_pennies"] == 2000
+    assert stats["unique_clients"] == 1
