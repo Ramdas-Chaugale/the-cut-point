@@ -29,8 +29,8 @@ next-env.d.ts
 .env.*
 !.env.example
 
-# ---- Claude Code local state ----
-.claude/settings.local.json
+# ---- Claude Code local state / tooling ----
+.claude/
 
 # ---- Editors / OS ----
 .vscode/
@@ -46,3 +46,7 @@ yarn-error.log*
 
 # ---- Docker volumes (local) ----
 .pgdata/
+
+# ---- Self-hosted MediaPipe assets (provisioned by frontend postinstall) ----
+frontend/public/mediapipe/
+frontend/public/_test/
