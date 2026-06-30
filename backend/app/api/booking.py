@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date as date_type
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 from sqlmodel import Session, select
 
 from app.api.deps import require_client, require_saloon
@@ -21,8 +21,54 @@ from app.models.booking import (
     ServiceRead,
     SlotsResponse,
 )
-from app.models.tables import Salon, Service, User
+from app.models.tables import Booking, Salon, Service, User
 from app.services import booking as svc
+from app.services import email as email_svc
+
+
+def _schedule_new_request(
+    background: BackgroundTasks, session: Session, booking: Booking, client: User
+) -> None:
+    """Look up recipients now (session open) and defer only the SMTP send."""
+    salon = session.get(Salon, booking.salon_id)
+    service = session.get(Service, booking.service_id)
+    owner = session.get(User, salon.owner_id) if salon else None
+    if owner and salon and service:
+        background.add_task(
+            email_svc.notify_new_request,
+            owner.email,
+            client_name=client.full_name,
+            service_name=service.name,
+            salon_name=salon.name,
+            when=booking.start_at,
+        )
+
+
+def _schedule_client(
+    background: BackgroundTasks, session: Session, booking: Booking, *, accepted: bool
+) -> None:
+    client = session.get(User, booking.client_id)
+    salon = session.get(Salon, booking.salon_id)
+    service = session.get(Service, booking.service_id)
+    if not (client and salon and service):
+        return
+    if accepted:
+        background.add_task(
+            email_svc.notify_accepted,
+            client.email,
+            service_name=service.name,
+            salon_name=salon.name,
+            when=booking.start_at,
+        )
+    else:
+        background.add_task(
+            email_svc.notify_declined,
+            client.email,
+            service_name=service.name,
+            salon_name=salon.name,
+            suggested=booking.suggested_start_at,
+        )
+
 
 router = APIRouter(prefix="/api", tags=["booking"])
 
@@ -93,6 +139,7 @@ def availability(
 @router.post("/bookings", response_model=BookingDetail)
 def request_booking(
     payload: BookingRequest,
+    background: BackgroundTasks,
     client: User = Depends(require_client),
     session: Session = Depends(get_session),
 ) -> BookingDetail:
@@ -107,6 +154,7 @@ def request_booking(
         )
     except svc.BookingError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+    _schedule_new_request(background, session, booking, client)
     return _detail(session, booking)
 
 
@@ -157,6 +205,7 @@ def salon_statistics(
 @router.post("/bookings/{booking_id}/accept", response_model=BookingDetail)
 def accept_booking(
     booking_id: int,
+    background: BackgroundTasks,
     owner: User = Depends(require_saloon),
     session: Session = Depends(get_session),
 ) -> BookingDetail:
@@ -164,6 +213,7 @@ def accept_booking(
         booking = svc.accept_booking(session, owner.id, booking_id)  # type: ignore[arg-type]
     except svc.BookingError as exc:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+    _schedule_client(background, session, booking, accepted=True)
     return _detail(session, booking)
 
 
@@ -171,6 +221,7 @@ def accept_booking(
 def decline_booking(
     booking_id: int,
     payload: DeclineRequest,
+    background: BackgroundTasks,
     owner: User = Depends(require_saloon),
     session: Session = Depends(get_session),
 ) -> BookingDetail:
@@ -183,4 +234,5 @@ def decline_booking(
         )
     except svc.BookingError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+    _schedule_client(background, session, booking, accepted=False)
     return _detail(session, booking)
