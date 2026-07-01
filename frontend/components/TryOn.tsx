@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { generateTryOn, getHealth } from "@/lib/api";
 import type { AnalysisPayload } from "@/lib/faceTypes";
 import type { StyleRecommendation } from "@/lib/recommendTypes";
 
@@ -39,6 +40,36 @@ export function TryOn({
   const overlayRef = useRef<HTMLImageElement | null>(null);
   const [ready, setReady] = useState(false);
   const [nudge, setNudge] = useState<Nudge>(NEUTRAL);
+
+  // Realistic AI try-on (fal.ai) — only offered when the backend has a key.
+  const [mode, setMode] = useState<"overlay" | "ai">("overlay");
+  const [aiEnabled, setAiEnabled] = useState(false);
+  const [aiImage, setAiImage] = useState<string | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+    getHealth()
+      .then((h) => active && setAiEnabled(Boolean(h.ai_tryon_enabled)))
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const runAiTryOn = async () => {
+    setAiLoading(true);
+    setAiError("");
+    try {
+      const res = await generateTryOn(payload.photo, style.id);
+      setAiImage(res.image_url);
+    } catch (e) {
+      setAiError((e as Error).message);
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   // Load the photo + the style overlay. The component is remounted per style
   // (keyed by id in the parent), so initial state is already fresh.
@@ -132,8 +163,9 @@ export function TryOn({
             Virtual try-on — {style.name}
           </h2>
           <p className="mt-1 text-sm text-zinc-500">
-            A 2D overlay anchored to your facial landmarks (not a neural hair
-            render). Nudge it for a perfect fit.
+            {mode === "overlay"
+              ? "A 2D overlay anchored to your facial landmarks (not a neural render). Nudge it for a perfect fit."
+              : "A photorealistic AI edit of your own photo wearing this style."}
           </p>
         </div>
         <button
@@ -145,6 +177,14 @@ export function TryOn({
         </button>
       </div>
 
+      {aiEnabled && (
+        <div className="mt-4 inline-flex rounded-lg border border-zinc-200 p-1 dark:border-zinc-800">
+          <ModeBtn active={mode === "overlay"} onClick={() => setMode("overlay")} label="2D overlay" />
+          <ModeBtn active={mode === "ai"} onClick={() => setMode("ai")} label="Realistic AI ✨" />
+        </div>
+      )}
+
+      {mode === "overlay" ? (
       <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-start">
         <div className="relative overflow-hidden rounded-lg border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/40">
           <canvas ref={canvasRef} className="block max-w-full" />
@@ -191,7 +231,97 @@ export function TryOn({
           </button>
         </div>
       </div>
+      ) : (
+        <div className="mt-5">
+          {aiImage ? (
+            <div className="flex flex-col items-start gap-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={aiImage}
+                alt={`AI try-on of ${style.name}`}
+                className="max-h-[480px] w-auto rounded-lg border border-zinc-200 dark:border-zinc-800"
+              />
+              <div className="flex gap-2">
+                <a
+                  href={aiImage}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900"
+                >
+                  Open full image
+                </a>
+                <button
+                  type="button"
+                  onClick={runAiTryOn}
+                  disabled={aiLoading}
+                  className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100 disabled:opacity-60 dark:border-zinc-700 dark:text-zinc-300"
+                >
+                  Regenerate
+                </button>
+              </div>
+              <p className="text-xs text-zinc-400">
+                AI-generated preview · your face is preserved; only the hair changes.
+              </p>
+            </div>
+          ) : (
+            <div className="max-w-md rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
+              <p className="text-sm text-zinc-600 dark:text-zinc-300">
+                Generate a <span className="font-medium">photorealistic</span> image of you
+                wearing the <span className="font-medium">{style.name}</span>, edited from your
+                own photo.
+              </p>
+              <button
+                type="button"
+                onClick={runAiTryOn}
+                disabled={aiLoading}
+                className="mt-3 inline-flex items-center gap-2 rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-500 disabled:opacity-60"
+              >
+                {aiLoading ? (
+                  <>
+                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    Generating… (~10s)
+                  </>
+                ) : (
+                  <>✨ Generate realistic try-on</>
+                )}
+              </button>
+              {aiError && (
+                <p className="mt-3 text-sm text-amber-600 dark:text-amber-400">
+                  Couldn&apos;t generate right now — {aiError}
+                </p>
+              )}
+              <p className="mt-3 text-xs text-zinc-400">
+                Uses a generative AI model. Takes a few seconds; results are an approximation.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
     </section>
+  );
+}
+
+function ModeBtn({
+  active,
+  onClick,
+  label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+        active
+          ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
+          : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+      }`}
+    >
+      {label}
+    </button>
   );
 }
 

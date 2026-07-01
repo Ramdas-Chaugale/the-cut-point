@@ -134,7 +134,7 @@ the_cut_point/
 - [x] Phase 8 — Client journey: nearby salons, booking + my-appointments, "bring this look"
 - [x] Phase 9 — Saloon/barber dashboard (requests, accept/decline, revenue, clients)
 - [x] Phase 10 — Email notifications (Gmail SMTP)
-- [ ] Phase 11 — Realistic AI try-on (fal.ai Flux Kontext)
+- [x] Phase 11 — Realistic AI try-on (fal.ai Flux Kontext)
 - [ ] Phase 12 — 3D avatar (Ready Player Me)
 - [ ] Phase 13 — Polish · Phase 14 — Local acceptance
 - [ ] GitHub, deploy, final README

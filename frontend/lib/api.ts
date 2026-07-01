@@ -122,6 +122,17 @@ export function explainStyle(req: ExplainRequest): Promise<ExplainResponse> {
   return apiPost<ExplainResponse>("/api/explain", req);
 }
 
+/** Generate a photorealistic AI try-on (fal.ai) of the user wearing a style. */
+export function generateTryOn(
+  imageDataUrl: string,
+  styleId: string,
+): Promise<{ image_url: string }> {
+  return apiPost<{ image_url: string }>("/api/tryon/generate", {
+    image_data_url: imageDataUrl,
+    style_id: styleId,
+  });
+}
+
 // --- Auth ----------------------------------------------------------------
 
 export function login(email: string, password: string): Promise<AuthResult> {
