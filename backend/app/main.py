@@ -9,6 +9,7 @@ from app.api.auth import router as auth_router
 from app.api.booking import router as booking_router
 from app.api.face import router as face_router
 from app.api.recommend import router as recommend_router
+from app.api.tryon import router as tryon_router
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -31,6 +32,7 @@ app.include_router(face_router)
 app.include_router(recommend_router)
 app.include_router(booking_router)
 app.include_router(auth_router)
+app.include_router(tryon_router)
 
 
 @app.get("/health", tags=["meta"])
