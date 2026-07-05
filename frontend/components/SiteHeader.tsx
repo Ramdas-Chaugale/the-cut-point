@@ -36,6 +36,7 @@ export function SiteHeader() {
           </Link>
           <nav className="hidden items-center gap-0.5 sm:flex">
             <NavLink href="/analyze" label="Try a style" />
+            <NavLink href="/avatar" label="3D avatar" />
             <NavLink href="/salons" label="Find a salon" />
             {user?.role === "client" && <NavLink href="/appointments" label="My appointments" />}
             {user?.role === "saloon" && salonId && <NavLink href="/dashboard" label="Dashboard" />}
