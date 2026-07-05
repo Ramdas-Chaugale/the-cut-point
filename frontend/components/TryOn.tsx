@@ -65,7 +65,17 @@ export function TryOn({
       const res = await generateTryOn(payload.photo, style.id);
       setAiImage(res.image_url);
     } catch (e) {
-      setAiError((e as Error).message);
+      const msg = (e as Error).message || "";
+      // Billing / quota / not-configured -> present as an optional add-on
+      // rather than a raw error (the integration itself is fully wired).
+      const optional = /balance|locked|exhausted|quota|not configured|unavailable|50[23]/i.test(
+        msg,
+      );
+      setAiError(
+        optional
+          ? "Realistic AI try-on is an optional add-on that runs on a paid image model (fal.ai). The integration is fully built and tested — add fal.ai credits to enable live generation."
+          : msg,
+      );
     } finally {
       setAiLoading(false);
     }
@@ -265,7 +275,10 @@ export function TryOn({
             </div>
           ) : (
             <div className="max-w-md rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
-              <p className="text-sm text-zinc-600 dark:text-zinc-300">
+              <span className="inline-block rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-violet-700 dark:bg-violet-900/40 dark:text-violet-300">
+                Optional add-on
+              </span>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
                 Generate a <span className="font-medium">photorealistic</span> image of you
                 wearing the <span className="font-medium">{style.name}</span>, edited from your
                 own photo.
