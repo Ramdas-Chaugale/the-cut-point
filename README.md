@@ -146,7 +146,7 @@ CutPoint offers three honest ways to visualise a style:
 - [x] Phase 9 — Saloon/barber dashboard (requests, accept/decline, revenue, clients)
 - [x] Phase 10 — Email notifications (Gmail SMTP)
 - [x] Phase 11 — Realistic AI try-on (fal.ai Flux Kontext)
-- [ ] Phase 12 — 3D avatar (Ready Player Me)
+- [x] Phase 12 — 3D avatar (Ready Player Me)
 - [ ] Phase 13 — Polish · Phase 14 — Local acceptance
 - [ ] GitHub, deploy, final README
 
