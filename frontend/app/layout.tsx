@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,7 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "CutPoint — AI Hairstyle & Salon Booking",
   description:
-    "AI hairstyle recommendation, virtual try-on, and salon booking.",
+    "AI hairstyle recommendation, virtual try-on, and salon booking. An individual project by Ramdas Chaugale.",
+  authors: [{ name: "Ramdas Chaugale" }],
+  applicationName: "CutPoint",
 };
 
 export default function RootLayout({
@@ -34,6 +37,7 @@ export default function RootLayout({
         <AuthProvider>
           <SiteHeader />
           <div className="flex flex-1 flex-col">{children}</div>
+          <SiteFooter />
         </AuthProvider>
       </body>
     </html>

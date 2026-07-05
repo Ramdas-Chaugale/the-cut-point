@@ -1,7 +1,10 @@
 {
-  "name": "frontend",
+  "name": "cutpoint-frontend",
   "version": "0.1.0",
   "private": true,
+  "description": "CutPoint — AI hairstyle recommendation & salon booking (frontend)",
+  "author": "Ramdas Chaugale",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

@@ -1,6 +1,8 @@
 # CutPoint — AI Hairstyle Recommendation & Salon Booking
 
-> Upload a photo → get your face shape (geometry-based, works on bald & short hair) → see recommended styles from four angles → try one on your own photo → book a salon appointment.
+> Upload a photo → get your face shape (geometry-based, works on bald & short hair) → see recommended styles from four angles → try one on your own photo → find a nearby salon and book an appointment.
+
+**An individual project designed and built by [Ramdas Chaugale](https://github.com/) — sole author.**
 
 **Status:** 🚧 Built and verified locally, phase by phase. (Live demo + screenshots land after deployment.)
 
@@ -113,10 +115,19 @@ the_cut_point/
 
 ---
 
+## Try-on modes
+
+CutPoint offers three honest ways to visualise a style:
+
+1. **2D overlay** — instant, free, schematic; a hairstyle silhouette anchored to your facial landmarks (bald-safe).
+2. **Realistic AI try-on** *(optional add-on)* — a photorealistic edit of your own photo via a generative image model (fal.ai Flux Kontext). Fully implemented and tested; it runs on a **paid** model, so it's disabled by default and lights up when a funded `FAL_KEY` is provided. Swappable for another provider (e.g. Google Gemini image) via one service module.
+3. **3D avatar** *(optional)* — a Ready Player Me avatar of you, as a separate showcase.
+
 ## Scope & limitations (honest)
 
-- The virtual try-on is a **2D landmark-anchored overlay**, not a neural hair-synthesis render.
+- The 2D try-on is a **landmark-anchored overlay**, not a neural render.
 - The four-angle views are **reference images of each hairstyle**, not a reconstruction of the user's own head/back — a single front photo cannot yield a real back-of-head view, so we don't fabricate one.
+- The realistic AI try-on and 3D avatar are **optional, provider-backed add-ons** (documented above); the core app is fully functional without them.
 - Single primary face assumed; clear messaging for no-face / multiple-faces / low-quality / not-front-facing photos.
 
 ---
@@ -144,3 +155,10 @@ the_cut_point/
 ## Challenges & learnings
 
 _Filled in as the build progresses._
+
+---
+
+## Author & license
+
+Designed and built by **Ramdas Chaugale** as an individual portfolio project.
+Licensed under the [MIT License](LICENSE) — © 2026 Ramdas Chaugale.
