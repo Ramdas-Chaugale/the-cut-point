@@ -16,9 +16,10 @@
 - Shows each style from **four reference angles** (front / left / right / back).
 - **Virtual try-on**: overlays the chosen style onto the user's own front photo, anchored to facial landmarks. Download the result or try another instantly.
 
-**Part B — Salon Appointment Booking**
-- Browse services, stylists, and conflict-free time slots.
-- Book / reschedule / cancel; "my appointments" view; optionally link a saved look to a booking.
+**Part B — Salon Appointment Booking (two-sided)**
+- **Clients**: find nearby salons (geolocation), browse each salon's menu & rates, request a time slot, and track requests in "my appointments" — optionally attaching a saved look ("bring this look").
+- **Salons/barbers**: register a shop, then accept / decline (with a suggested time) incoming requests from a dashboard showing revenue, upcoming/completed appointments and clients.
+- Conflict-free by design (a salon's chairs can't be over-booked); email notifications on request and accept/decline.
 
 ---
 
@@ -40,13 +41,16 @@ _Coming in later phases._
 
 | Layer | Choice | Why |
 | --- | --- | --- |
-| Frontend | Next.js (App Router) + TypeScript, Tailwind, shadcn/ui | Modern React, type-safe, fast UI |
+| Frontend | Next.js 16 (App Router) + TypeScript + Tailwind v4 | Modern React, type-safe, fast UI |
 | Computer vision | MediaPipe Tasks Vision (Face Landmarker), in-browser | Heavy CV runs on the user's device — no ML server cost |
-| Try-on | HTML Canvas | Landmark-anchored overlay + PNG export |
-| Backend | Python + FastAPI, Pydantic v2, SQLModel | Strong AI/ML portfolio signal; typed, well-structured API |
-| LLM | Groq (OpenAI-compatible) | Very fast inference; graceful fallback to templated text |
+| 2D try-on | HTML Canvas | Landmark-anchored overlay + PNG export |
+| Backend | Python + FastAPI, Pydantic v2, SQLModel, Alembic | Strong AI/ML portfolio signal; typed, migration-managed API |
+| LLM | Groq (Llama 3.3) | Very fast inference; graceful fallback to templated text |
+| Realistic AI try-on | fal.ai Flux Kontext *(optional)* | Photorealistic hair editing; degrades off without a key |
+| 3D avatar | Ready Player Me + `<model-viewer>` *(optional)* | Free selfie→3D avatar showcase |
+| Email | Gmail SMTP (background tasks) | Request/accept/decline notifications; no-op without creds |
 | Database | PostgreSQL (local Docker; Neon in prod) | Relational integrity for bookings |
-| Auth | Self-hosted JWT | No external dependency; demonstrates backend auth |
+| Auth | Self-hosted JWT + bcrypt, two roles | No external dependency; demonstrates backend auth |
 
 ---
 
@@ -147,7 +151,8 @@ CutPoint offers three honest ways to visualise a style:
 - [x] Phase 10 — Email notifications (Gmail SMTP)
 - [x] Phase 11 — Realistic AI try-on (fal.ai Flux Kontext)
 - [x] Phase 12 — 3D avatar (Ready Player Me)
-- [ ] Phase 13 — Polish · Phase 14 — Local acceptance
+- [x] Phase 13 — Polish (landing page, mobile nav, 404/500, consistency)
+- [ ] Phase 14 — Local acceptance
 - [ ] GitHub, deploy, final README
 
 ---
