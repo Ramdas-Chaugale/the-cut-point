@@ -1,14 +1,9 @@
-# CutPoint hairstyle knowledge base.
+# CutPoint hairstyle knowledge base — on-trend, barbershop-led catalogue.
 #
-# Each entry maps a hairstyle to the face shapes it flatters plus the inputs
-# used for ranking (presentation, length, hair type, maintenance). `rationale_tags`
-# describe the style's effect and drive the "why it suits you" explanation.
-#
-# Presentation model: a style is tagged EITHER `[unisex]` (genuinely androgynous —
-# offered for every presentation) OR a specific gender (`[masculine]` /
-# `[feminine]`). A masculine request returns masculine + unisex styles; a
-# feminine request returns feminine + unisex; a unisex request returns only the
-# androgynous set. (See _presentation_ok in services/recommend.py.)
+# Presentation model: a style is tagged EITHER `[unisex]` (androgynous — offered
+# for every presentation) OR a specific gender. A masculine request returns
+# masculine + unisex; feminine returns feminine + unisex; unisex returns the
+# androgynous set only. (See _presentation_ok in services/recommend.py.)
 #
 # Controlled vocabularies (validated on load, see loader.py):
 #   presentations:  masculine | feminine | unisex
@@ -22,57 +17,68 @@
 #                   low-upkeep | shortens-face
 
 styles:
-  - id: textured-crop
-    name: Textured Crop
-    presentations: [unisex]
+  # ---------------- Barbershop / masculine & unisex trend cuts ----------------
+  - id: burst-fade
+    name: Burst Fade
+    presentations: [masculine]
     length: short
-    hair_types: [straight, wavy, coily]
+    hair_types: [curly, coily, wavy]
+    maintenance: medium
+    flattering_for: [round, oval, square, diamond, triangle]
+    rationale_tags: [adds-texture, highlights-bone-structure]
+    description: A fade that curves around the ear with textured length left on top.
+
+  - id: drop-fade-crop
+    name: Drop Fade Crop
+    presentations: [masculine]
+    length: short
+    hair_types: [straight, wavy]
+    maintenance: low
+    flattering_for: [oval, square, oblong, heart, diamond]
+    rationale_tags: [frames-face, low-upkeep]
+    description: A tidy crop with a fade that dips low behind the ear.
+
+  - id: edgar-crop
+    name: Edgar Cut
+    presentations: [masculine]
+    length: short
+    hair_types: [straight, wavy, curly]
     maintenance: low
     flattering_for: [round, oval, square, triangle, diamond]
-    rationale_tags: [adds-texture, adds-height, low-upkeep]
-    description: A short cut with textured, slightly longer top and tidy sides.
+    rationale_tags: [shortens-face, adds-texture]
+    description: A blunt, forward-brushed fringe over sharply faded sides.
 
-  - id: pompadour
-    name: Pompadour
+  - id: french-crop
+    name: French Crop
+    presentations: [masculine]
+    length: short
+    hair_types: [straight, wavy]
+    maintenance: low
+    flattering_for: [oval, oblong, square, heart, diamond]
+    rationale_tags: [shortens-face, frames-face]
+    description: A short textured top with a straight fringe and tapered sides.
+
+  - id: textured-fringe
+    name: Textured Fringe
+    presentations: [unisex]
+    length: short
+    hair_types: [straight, wavy]
+    maintenance: medium
+    flattering_for: [oblong, diamond, heart, round]
+    rationale_tags: [shortens-face, balances-forehead, adds-texture]
+    description: A piecey fringe swept onto the forehead over faded sides.
+
+  - id: high-fade-pompadour
+    name: High Fade Pompadour
     presentations: [masculine]
     length: medium
     hair_types: [straight, wavy]
     maintenance: high
     flattering_for: [round, square, triangle, diamond]
     rationale_tags: [adds-height, elongates, adds-volume]
-    description: Volume swept up and back from the forehead for a bold, tall shape.
+    description: Big volume swept up and back over a high fade.
 
-  - id: buzz-cut
-    name: Buzz Cut
-    presentations: [unisex]
-    length: short
-    hair_types: [straight, wavy, curly, coily]
-    maintenance: low
-    flattering_for: [oval, square, diamond]
-    rationale_tags: [highlights-bone-structure, low-upkeep]
-    description: A uniform, very short clipper cut that showcases bone structure.
-
-  - id: faux-hawk
-    name: Faux Hawk
-    presentations: [unisex]
-    length: short
-    hair_types: [straight, wavy, curly]
-    maintenance: medium
-    flattering_for: [round, triangle, square]
-    rationale_tags: [adds-height, adds-texture]
-    description: Tapered sides with a central strip of length styled upward.
-
-  - id: side-part-classic
-    name: Classic Side Part
-    presentations: [masculine]
-    length: short
-    hair_types: [straight, wavy]
-    maintenance: medium
-    flattering_for: [oval, oblong, square, heart]
-    rationale_tags: [frames-face, balances-forehead]
-    description: A timeless combed side part with a defined parting line.
-
-  - id: quiff
+  - id: quiff-fade
     name: Quiff
     presentations: [masculine]
     length: medium
@@ -80,37 +86,17 @@ styles:
     maintenance: high
     flattering_for: [round, square, triangle, diamond]
     rationale_tags: [adds-height, adds-volume]
-    description: Forward-and-up volume at the front, shorter through the back and sides.
+    description: A voluminous front lift with tapered sides.
 
-  - id: crew-cut
-    name: Crew Cut
-    presentations: [unisex]
-    length: short
-    hair_types: [straight, wavy, coily]
-    maintenance: low
-    flattering_for: [oval, square, diamond]
-    rationale_tags: [low-upkeep, highlights-bone-structure]
-    description: A neat, graduated short cut, slightly longer at the front.
-
-  - id: man-bun
-    name: Top Knot / Man Bun
-    presentations: [unisex]
-    length: long
-    hair_types: [straight, wavy, curly]
+  - id: slick-back-undercut
+    name: Slick-Back Undercut
+    presentations: [masculine]
+    length: medium
+    hair_types: [straight, wavy]
     maintenance: medium
-    flattering_for: [oval, square, round]
+    flattering_for: [oval, oblong, heart]
     rationale_tags: [elongates, frames-face]
-    description: Longer hair gathered and tied back into a high bun.
-
-  - id: curly-top-fade
-    name: Curly Top with Fade
-    presentations: [unisex]
-    length: short
-    hair_types: [curly, coily]
-    maintenance: medium
-    flattering_for: [round, square, triangle, diamond]
-    rationale_tags: [adds-volume, adds-height]
-    description: Natural curls kept full on top over a clean fade.
+    description: Hair combed straight back with disconnected short sides.
 
   - id: comb-over-fade
     name: Comb Over Fade
@@ -120,8 +106,79 @@ styles:
     maintenance: medium
     flattering_for: [oval, oblong, heart, square]
     rationale_tags: [frames-face, elongates]
-    description: Hair swept neatly to one side above a fade.
+    description: A neat side-swept top over a clean fade.
 
+  - id: buzz-skin-fade
+    name: Buzz & Skin Fade
+    presentations: [unisex]
+    length: short
+    hair_types: [straight, wavy, curly, coily]
+    maintenance: low
+    flattering_for: [oval, square, diamond]
+    rationale_tags: [highlights-bone-structure, low-upkeep]
+    description: A uniform buzz blended into a clean skin fade.
+
+  - id: waves-360
+    name: 360 Waves
+    presentations: [unisex]
+    length: short
+    hair_types: [coily]
+    maintenance: medium
+    flattering_for: [oval, square, diamond, oblong]
+    rationale_tags: [highlights-bone-structure, adds-texture]
+    description: A brushed 360-wave pattern kept close with a taper.
+
+  - id: afro-taper
+    name: Afro Taper
+    presentations: [unisex]
+    length: medium
+    hair_types: [coily]
+    maintenance: medium
+    flattering_for: [oval, oblong, heart, square]
+    rationale_tags: [adds-volume, adds-width]
+    description: Full natural curls shaped up with tapered sides.
+
+  - id: modern-mullet
+    name: Modern Mullet
+    presentations: [unisex]
+    length: medium
+    hair_types: [straight, wavy, curly]
+    maintenance: medium
+    flattering_for: [round, square, oblong, triangle]
+    rationale_tags: [adds-texture, adds-volume]
+    description: Short, textured on top and at the front, longer at the nape.
+
+  - id: man-bun-undercut
+    name: Man Bun + Undercut
+    presentations: [masculine]
+    length: long
+    hair_types: [straight, wavy, curly]
+    maintenance: medium
+    flattering_for: [oval, square, round]
+    rationale_tags: [elongates, frames-face]
+    description: Long hair tied up top over shaved-in sides.
+
+  - id: middle-part-curtains
+    name: Middle-Part Curtains
+    presentations: [unisex]
+    length: medium
+    hair_types: [straight, wavy]
+    maintenance: medium
+    flattering_for: [round, square, triangle, diamond]
+    rationale_tags: [adds-texture, softens-angles]
+    description: Centre-parted curtains that frame both sides of the face.
+
+  - id: wolf-cut
+    name: Wolf Cut
+    presentations: [unisex]
+    length: medium
+    hair_types: [wavy, curly]
+    maintenance: medium
+    flattering_for: [round, square, oblong, triangle]
+    rationale_tags: [adds-texture, adds-volume]
+    description: A shaggy, heavily layered cut with volume up top.
+
+  # ---------------- Salon / feminine trend cuts ----------------
   - id: blunt-bob
     name: Blunt Bob
     presentations: [feminine]
@@ -132,6 +189,36 @@ styles:
     rationale_tags: [adds-width, frames-face, balances-jaw]
     description: A sharp, one-length bob that sits around the jaw.
 
+  - id: curtain-bangs-lob
+    name: Curtain-Bangs Lob
+    presentations: [feminine]
+    length: medium
+    hair_types: [straight, wavy]
+    maintenance: medium
+    flattering_for: [round, square, oblong, heart]
+    rationale_tags: [softens-angles, balances-forehead, frames-face]
+    description: A collarbone-length lob with soft, centre-parted bangs.
+
+  - id: butterfly-layers
+    name: Butterfly Layers
+    presentations: [feminine]
+    length: long
+    hair_types: [wavy, curly]
+    maintenance: medium
+    flattering_for: [round, square, oblong, triangle]
+    rationale_tags: [elongates, softens-angles, adds-volume]
+    description: Long, face-framing layers with bouncy volume.
+
+  - id: textured-pixie
+    name: Textured Pixie
+    presentations: [feminine]
+    length: short
+    hair_types: [straight, wavy]
+    maintenance: medium
+    flattering_for: [oval, heart, diamond, square]
+    rationale_tags: [highlights-bone-structure, frames-face]
+    description: A short, piecey crop that highlights the eyes and cheekbones.
+
   - id: long-layers
     name: Long Layers
     presentations: [unisex]
@@ -141,163 +228,3 @@ styles:
     flattering_for: [round, square, oval, triangle]
     rationale_tags: [elongates, softens-angles]
     description: Long hair with layered ends for movement and a slimming line.
-
-  - id: curtain-fringe
-    name: Curtain Fringe
-    presentations: [feminine]
-    length: long
-    hair_types: [straight, wavy]
-    maintenance: medium
-    flattering_for: [round, oblong, heart, diamond]
-    rationale_tags: [shortens-face, balances-forehead, frames-face]
-    description: A centre-split fringe that frames the eyes and cheekbones.
-
-  - id: side-swept-fringe
-    name: Side-Swept Fringe
-    presentations: [feminine]
-    length: medium
-    hair_types: [straight, wavy]
-    maintenance: medium
-    flattering_for: [heart, diamond, square, oblong]
-    rationale_tags: [balances-forehead, softens-angles]
-    description: A soft fringe swept diagonally across the forehead.
-
-  - id: blunt-bangs-bob
-    name: Bob with Blunt Bangs
-    presentations: [feminine]
-    length: medium
-    hair_types: [straight]
-    maintenance: high
-    flattering_for: [oblong, diamond, oval]
-    rationale_tags: [shortens-face, adds-width]
-    description: A bob paired with straight-across blunt bangs.
-
-  - id: shoulder-length-waves
-    name: Shoulder-Length Waves
-    presentations: [feminine]
-    length: medium
-    hair_types: [wavy, curly]
-    maintenance: medium
-    flattering_for: [square, oblong, oval, diamond]
-    rationale_tags: [softens-angles, adds-volume, adds-width]
-    description: Loose waves falling to the shoulders.
-
-  - id: pixie-cut
-    name: Pixie Cut
-    presentations: [feminine]
-    length: short
-    hair_types: [straight, wavy]
-    maintenance: medium
-    flattering_for: [oval, heart, diamond, square]
-    rationale_tags: [highlights-bone-structure, frames-face]
-    description: A short, cropped cut that highlights the eyes and cheekbones.
-
-  - id: chin-length-bob
-    name: Chin-Length Bob
-    presentations: [feminine]
-    length: medium
-    hair_types: [straight, wavy]
-    maintenance: medium
-    flattering_for: [heart, diamond, oblong]
-    rationale_tags: [adds-width, balances-jaw]
-    description: A bob that ends right at the chin to add width low on the face.
-
-  - id: long-straight-center-part
-    name: Long Straight, Centre Part
-    presentations: [feminine]
-    length: long
-    hair_types: [straight]
-    maintenance: low
-    flattering_for: [round, square, triangle]
-    rationale_tags: [elongates, frames-face]
-    description: Sleek, long, straight hair parted down the middle.
-
-  - id: high-ponytail
-    name: High Ponytail
-    presentations: [feminine]
-    length: long
-    hair_types: [straight, wavy, curly, coily]
-    maintenance: low
-    flattering_for: [round, oval, triangle]
-    rationale_tags: [adds-height, frames-face]
-    description: Hair pulled up high to lift the face and add height.
-
-  - id: layered-lob
-    name: Layered Lob
-    presentations: [feminine]
-    length: medium
-    hair_types: [straight, wavy]
-    maintenance: medium
-    flattering_for: [oval, square, oblong, triangle]
-    rationale_tags: [softens-angles, frames-face]
-    description: A longer bob with soft layers grazing the collarbone.
-
-  - id: voluminous-curls
-    name: Voluminous Curls
-    presentations: [feminine]
-    length: long
-    hair_types: [curly, coily]
-    maintenance: high
-    flattering_for: [oval, oblong, square, heart]
-    rationale_tags: [adds-volume, softens-angles]
-    description: Full, bouncy curls with plenty of body.
-
-  - id: shag-mullet
-    name: Modern Shag
-    presentations: [unisex]
-    length: medium
-    hair_types: [straight, wavy, curly]
-    maintenance: medium
-    flattering_for: [round, square, oblong, triangle]
-    rationale_tags: [adds-texture, adds-volume]
-    description: A heavily layered, textured shag with volume up top.
-
-  - id: afro
-    name: Afro
-    presentations: [unisex]
-    length: medium
-    hair_types: [coily]
-    maintenance: medium
-    flattering_for: [oval, oblong, heart, square]
-    rationale_tags: [adds-volume, adds-width]
-    description: Natural coily hair worn full and rounded.
-
-  - id: cornrows
-    name: Cornrows
-    presentations: [unisex]
-    length: short
-    hair_types: [coily]
-    maintenance: low
-    flattering_for: [oval, square, diamond, oblong]
-    rationale_tags: [highlights-bone-structure, low-upkeep]
-    description: Hair braided flat to the scalp in neat rows.
-
-  - id: slick-back
-    name: Slick Back
-    presentations: [unisex]
-    length: medium
-    hair_types: [straight, wavy]
-    maintenance: medium
-    flattering_for: [oval, oblong, heart]
-    rationale_tags: [elongates, frames-face]
-    description: Hair combed straight back off the face.
-
-  - id: wavy-curtain
-    name: Wavy Curtains
-    presentations: [unisex]
-    length: medium
-    hair_types: [wavy]
-    maintenance: low
-    flattering_for: [round, square, triangle, diamond]
-    rationale_tags: [adds-texture, softens-angles]
-    description: Middle-parted, wavy curtains framing both sides of the face.
-
-  - id: textured-fringe
-    name: Textured Fringe
-    presentations: [unisex]
-    length: short
-    hair_types: [straight, wavy]
-    maintenance: medium
-    flattering_for: [oblong, diamond, heart, round]
-    rationale_tags: [shortens-face, balances-forehead, adds-texture]
-    description: A short, piecey fringe falling onto the forehead.
