@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300" width="240" height="300" role="img">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f7f8fa"/><stop offset="1" stop-color="#eaedf1"/>
+  </linearGradient>
+  <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f2d3ba"/><stop offset="1" stop-color="#e0b393"/>
+  </linearGradient>
+  <linearGradient id="hair" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#413a48"/><stop offset="0.55" stop-color="#2c2731"/>
+    <stop offset="1" stop-color="#1e1b23"/>
+  </linearGradient>
+  <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#2c2731"/>
+    <stop offset="1" stop-color="#2c2731" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="garment" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#3f4b5b"/><stop offset="1" stop-color="#333d4a"/>
+  </linearGradient>
+</defs>
+
+<path d="M187.2,108.0 L176.5,121.5 L179.5,138.2 L163.6,145.3 L158.2,161.5 L140.6,160.6 L128.1,172.5 L113.0,163.8 L96.2,168.7 L86.9,154.3 L69.7,151.1 L68.5,134.1 L54.8,123.5 L61.8,108.0 L54.8,92.5 L68.5,81.9 L69.7,64.9 L86.9,61.7 L96.2,47.3 L113.0,52.2 L128.1,43.5 L140.6,55.4 L158.2,54.5 L163.6,70.7 L179.5,77.8 L176.5,94.5 Z" fill="url(#hair)"/>
+<path d="M173.8,92.0 L165.0,102.0 L166.6,114.4 L152.9,119.4 L146.9,130.8 L132.1,129.5 L120.0,136.8 L107.9,129.5 L93.1,130.8 L87.1,119.4 L73.4,114.4 L75.0,102.0 L66.2,92.0 L75.0,82.0 L73.4,69.6 L87.1,64.6 L93.1,53.2 L107.9,54.5 L120.0,47.2 L132.1,54.5 L146.9,53.2 L152.9,64.6 L166.6,69.6 L165.0,82.0 Z" fill="url(#hair)"/><ellipse cx="106.0" cy="78" rx="22" ry="12" fill="#6d6675" opacity="0.22"/>
+</svg>

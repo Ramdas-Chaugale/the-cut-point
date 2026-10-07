@@ -98,7 +98,7 @@ def test_masculine_only_style_excluded_for_feminine_request() -> None:
     feminine = _ids(
         RecommendRequest(face_shape=FaceShape.round, presentation=Presentation.feminine)
     )
-    assert "pompadour" not in feminine
+    assert "high-fade-pompadour" not in feminine
 
 
 def test_unisex_request_excludes_gendered_only_styles() -> None:
@@ -109,10 +109,10 @@ def test_unisex_request_excludes_gendered_only_styles() -> None:
 
 
 def test_unisex_styles_appear_for_every_presentation() -> None:
-    # Wavy Curtains is unisex and flatters round; it should appear for all.
+    # Middle-Part Curtains is unisex and flatters round; it should appear for all.
     for pres in Presentation:
         ids = _ids(RecommendRequest(face_shape=FaceShape.round, presentation=pres, limit=28))
-        assert "wavy-curtain" in ids
+        assert "middle-part-curtains" in ids
 
 
 def test_explanation_mentions_the_style_and_shape() -> None:

@@ -106,18 +106,18 @@ export function haversineKm(
 export const STATUS_BADGE: Record<BookingStatus, { label: string; cls: string }> = {
   pending: {
     label: "Pending",
-    cls: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",
+    cls: "bg-caution-soft text-caution",
   },
   confirmed: {
     label: "Confirmed",
-    cls: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300",
+    cls: "bg-positive-soft text-positive",
   },
   declined: {
     label: "Declined",
-    cls: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300",
+    cls: "bg-negative-soft text-negative",
   },
   cancelled: {
     label: "Cancelled",
-    cls: "bg-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
+    cls: "bg-surface-sunken text-ink-faint",
   },
 };

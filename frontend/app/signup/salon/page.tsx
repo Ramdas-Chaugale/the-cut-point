@@ -3,10 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Check, MapPin } from "lucide-react";
 import { useAuth } from "@/lib/auth";
-
-const INPUT =
-  "w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-emerald-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100";
+import { AuthShell, ErrorNote, Field, INPUT } from "@/components/AuthShell";
 
 export default function SalonSignupPage() {
   const { registerSaloon } = useAuth();
@@ -76,74 +75,154 @@ export default function SalonSignupPage() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-lg px-6 py-12">
-      <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-        List your salon
-      </h1>
-      <p className="mt-1 text-sm text-zinc-500">
-        Create a salon account to receive and manage booking requests.
-      </p>
-
-      <form onSubmit={submit} className="mt-6 flex flex-col gap-4">
-        <fieldset className="flex flex-col gap-3">
-          <legend className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+    <AuthShell
+      wide
+      title="List your salon"
+      subtitle="Create a salon account to receive and manage booking requests."
+      footer={
+        <span className="text-ink-faint">
+          Booking as a customer instead?{" "}
+          <Link href="/signup" className="font-medium text-accent hover:underline">
+            Client sign-up
+          </Link>
+        </span>
+      }
+    >
+      <form onSubmit={submit} className="mt-6 flex flex-col gap-6">
+        <fieldset className="flex flex-col gap-4">
+          <legend className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-faint">
             Your account
           </legend>
-          <input required placeholder="Your name" value={form.full_name} onChange={(e) => set("full_name", e.target.value)} className={INPUT} />
-          <input type="email" required placeholder="Email" value={form.email} onChange={(e) => set("email", e.target.value)} className={INPUT} autoComplete="email" />
-          <input type="password" required placeholder="Password (min 8 characters)" value={form.password} onChange={(e) => set("password", e.target.value)} className={INPUT} autoComplete="new-password" />
+          <Field label="Your name">
+            <input
+              required
+              placeholder="Alex Morgan"
+              value={form.full_name}
+              onChange={(e) => set("full_name", e.target.value)}
+              className={INPUT}
+              autoComplete="name"
+            />
+          </Field>
+          <Field label="Email">
+            <input
+              type="email"
+              required
+              placeholder="you@example.com"
+              value={form.email}
+              onChange={(e) => set("email", e.target.value)}
+              className={INPUT}
+              autoComplete="email"
+            />
+          </Field>
+          <Field label="Password" hint="At least 8 characters.">
+            <input
+              type="password"
+              required
+              placeholder="••••••••"
+              value={form.password}
+              onChange={(e) => set("password", e.target.value)}
+              className={INPUT}
+              autoComplete="new-password"
+            />
+          </Field>
         </fieldset>
 
-        <fieldset className="flex flex-col gap-3">
-          <legend className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+        <fieldset className="flex flex-col gap-4 border-t border-line pt-6">
+          <legend className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-faint">
             Your salon
           </legend>
-          <input required placeholder="Salon name" value={form.name} onChange={(e) => set("name", e.target.value)} className={INPUT} />
-          <input placeholder="Short description" value={form.description} onChange={(e) => set("description", e.target.value)} className={INPUT} />
-          <input required placeholder="Address" value={form.address} onChange={(e) => set("address", e.target.value)} className={INPUT} />
-          <div className="grid grid-cols-2 gap-3">
-            <input required placeholder="City" value={form.city} onChange={(e) => set("city", e.target.value)} className={INPUT} />
-            <input required placeholder="Phone" value={form.phone} onChange={(e) => set("phone", e.target.value)} className={INPUT} />
+          <Field label="Salon name">
+            <input
+              required
+              placeholder="The Cut Point"
+              value={form.name}
+              onChange={(e) => set("name", e.target.value)}
+              className={INPUT}
+            />
+          </Field>
+          <Field label="Short description" hint="One line clients see on your card.">
+            <input
+              placeholder="Modern barbering and colour, walk-ins welcome."
+              value={form.description}
+              onChange={(e) => set("description", e.target.value)}
+              className={INPUT}
+            />
+          </Field>
+          <Field label="Address">
+            <input
+              required
+              placeholder="12 Botanic Avenue"
+              value={form.address}
+              onChange={(e) => set("address", e.target.value)}
+              className={INPUT}
+              autoComplete="street-address"
+            />
+          </Field>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Field label="City">
+              <input
+                required
+                placeholder="Belfast"
+                value={form.city}
+                onChange={(e) => set("city", e.target.value)}
+                className={INPUT}
+              />
+            </Field>
+            <Field label="Phone">
+              <input
+                required
+                placeholder="028 9000 0000"
+                value={form.phone}
+                onChange={(e) => set("phone", e.target.value)}
+                className={INPUT}
+                autoComplete="tel"
+              />
+            </Field>
           </div>
-          <label className="flex items-center justify-between gap-3 text-sm text-zinc-600 dark:text-zinc-400">
-            <span>Chairs (clients served at once)</span>
+          <Field label="Chairs" hint="How many clients you can serve at once.">
             <input
               type="number"
               min={1}
               max={20}
               value={form.chairs}
               onChange={(e) => set("chairs", Number(e.target.value))}
-              className="w-20 rounded-md border border-zinc-300 px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+              className={`${INPUT} sm:max-w-28`}
             />
-          </label>
-          <button
-            type="button"
-            onClick={useMyLocation}
-            className="self-start rounded-md border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
-          >
-            {located ? "📍 Location set" : "📍 Use my location"}
-          </button>
-          <p className="text-xs text-zinc-400">
-            Sets your map pin so nearby clients can find you. Defaults to the city centre.
-          </p>
+          </Field>
+
+          {/* Sets the map pin used for distance sorting on the salon list. */}
+          <div className="flex flex-wrap items-center gap-3 rounded-lg bg-surface p-3">
+            <button
+              type="button"
+              onClick={useMyLocation}
+              className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
+                located
+                  ? "border-positive-line bg-positive-soft text-positive"
+                  : "border-line-strong text-ink-soft hover:border-accent hover:text-accent"
+              }`}
+            >
+              {located ? (
+                <Check className="h-4 w-4" aria-hidden />
+              ) : (
+                <MapPin className="h-4 w-4" aria-hidden />
+              )}
+              {located ? "Location set" : "Use my location"}
+            </button>
+            <p className="text-xs text-ink-faint">
+              Places your pin so nearby clients can find you. Defaults to the city centre.
+            </p>
+          </div>
         </fieldset>
 
-        {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+        {error && <ErrorNote>{error}</ErrorNote>}
         <button
           type="submit"
           disabled={busy}
-          className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+          className="w-full px-4 py-2.5 disabled:opacity-60 rounded-lg bg-accent text-sm font-semibold text-accent-ink shadow-sm transition-colors hover:bg-accent-hover"
         >
           {busy ? "Creating salon…" : "Create salon account"}
         </button>
       </form>
-
-      <p className="mt-4 text-sm text-zinc-500">
-        Booking as a customer instead?{" "}
-        <Link href="/signup" className="font-medium text-emerald-600 hover:underline">
-          Client sign-up
-        </Link>
-      </p>
-    </div>
+    </AuthShell>
   );
 }

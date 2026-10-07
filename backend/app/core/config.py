@@ -30,9 +30,15 @@ class Settings(BaseSettings):
 
     # --- LLM (Groq) ---
     groq_api_key: str = ""
-    groq_model: str = "llama-3.3-70b-versatile"
+    groq_model: str = "openai/gpt-oss-120b"
 
-    # --- Realistic AI try-on (fal.ai, Flux Kontext) ---
+    # --- Realistic AI try-on ---
+    # Two providers. Cloudflare inpaints the hair region for free; fal.ai edits
+    # the whole photo with a stronger model but bills per image. Cloudflare is
+    # preferred when configured so a public demo costs nothing to run.
+    cloudflare_account_id: str = ""
+    cloudflare_api_token: str = ""
+    cloudflare_inpaint_model: str = "@cf/runwayml/stable-diffusion-v1-5-inpainting"
     fal_key: str = ""
     fal_model: str = "fal-ai/flux-pro/kontext"
 
@@ -60,9 +66,14 @@ class Settings(BaseSettings):
         return bool(self.groq_api_key.strip())
 
     @property
+    def cloudflare_enabled(self) -> bool:
+        """Whether the free Cloudflare inpainting provider is configured."""
+        return bool(self.cloudflare_account_id.strip() and self.cloudflare_api_token.strip())
+
+    @property
     def ai_tryon_enabled(self) -> bool:
-        """Whether realistic AI try-on (fal.ai) is configured."""
-        return bool(self.fal_key.strip())
+        """Whether any realistic try-on provider is configured."""
+        return self.cloudflare_enabled or bool(self.fal_key.strip())
 
     @property
     def email_enabled(self) -> bool:

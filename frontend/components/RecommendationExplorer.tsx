@@ -11,6 +11,7 @@ import type {
   StyleRecommendation,
 } from "@/lib/recommendTypes";
 import { StyleCard } from "./StyleCard";
+import { StylistChat } from "@/components/StylistChat";
 
 interface Prefs {
   presentation: Presentation | "";
@@ -34,11 +35,11 @@ function Select<T extends string>({
 }) {
   return (
     <label className="flex flex-col gap-1 text-sm">
-      <span className="text-zinc-500">{label}</span>
+      <span className="text-ink-faint">{label}</span>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value as T | "")}
-        className="rounded-md border border-zinc-300 bg-white px-2.5 py-1.5 text-sm text-zinc-800 focus:border-emerald-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+        className="rounded-lg border border-line-strong bg-surface-raised px-2.5 py-1.5 text-sm text-ink focus:border-accent focus:outline-none"
       >
         <option value="">No preference</option>
         {options.map((o) => (
@@ -116,12 +117,12 @@ export function RecommendationExplorer({
 
   return (
     <section className="mt-12">
-      <h2 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+      <h2 className="text-xl font-semibold tracking-tight text-ink">
         Recommended hairstyles
       </h2>
-      <p className="mt-1 text-sm text-zinc-500">
+      <p className="mt-1 text-sm text-ink-faint">
         Ranked for your{" "}
-        <span className="font-medium text-zinc-700 dark:text-zinc-300">{faceShape}</span>{" "}
+        <span className="font-medium text-ink-soft">{faceShape}</span>{" "}
         face shape. Refine with your preferences below.
       </p>
 
@@ -173,8 +174,8 @@ export function RecommendationExplorer({
       {/* Results */}
       <div className="mt-6">
         {status === "error" && (
-          <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-800/50 dark:bg-red-950/40 dark:text-red-200">
-            Could not load recommendations — {error}
+          <div className="rounded-lg border border-negative-line bg-negative-soft px-4 py-3 text-sm text-negative">
+            Could not load recommendations. {error}
           </div>
         )}
         {status === "loading" && (
@@ -182,13 +183,13 @@ export function RecommendationExplorer({
             {Array.from({ length: 3 }).map((_, i) => (
               <div
                 key={i}
-                className="h-96 animate-pulse rounded-xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900"
+                className="h-96 animate-pulse rounded-xl border border-line bg-surface-sunken"
               />
             ))}
           </div>
         )}
         {status === "ready" && items.length === 0 && (
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-ink-faint">
             No styles match those exact preferences. Try relaxing one of them.
           </p>
         )}
@@ -204,6 +205,15 @@ export function RecommendationExplorer({
                 onTryOn={onTryOn}
               />
             ))}
+          </div>
+        )}
+
+        {/* The assistant gets the detected face shape, so follow-up questions
+            are answered in the context of the result above rather than in the
+            abstract. */}
+        {status === "ready" && items.length > 0 && (
+          <div className="mt-10">
+            <StylistChat faceShape={faceShape} />
           </div>
         )}
       </div>

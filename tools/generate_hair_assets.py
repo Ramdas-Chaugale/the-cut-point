@@ -212,13 +212,21 @@ def _top(p: Hair) -> str:
             f'C{CX},{top-26} 170,{top-16} 166,110 '
             f"C150,96 90,96 74,110 Z\" fill=\"url(#hair)\"/>"
         )
+        # This shape is pulled up to roughly top-24 at the centre.
+        crown = top - 20
     else:
         brow = 104 + (14 if p.fringe in ("fwd", "edgar", "brow") else 0)
         cap = (
             f'<path d="M72,112 C70,{top} 170,{top} 168,112 '
             f'C150,{brow} 90,{brow} 72,112 Z" fill="url(#hair)"/>'
         )
-    return cap + _fringe(p) + _sheen(CX - 30, top + 12, 26, 10)
+        # Both control points sit at `top`, so a cubic only climbs about three
+        # quarters of that distance. Using `top` directly put the sheen in the
+        # empty gap above the painted hair.
+        crown = 112 + 0.75 * (top - 112)
+
+    # Sit the highlight just inside the crown so it reads as light on hair.
+    return cap + _fringe(p) + _sheen(CX - 28, crown + 15, 24, 9)
 
 
 def _fringe(p: Hair) -> str:

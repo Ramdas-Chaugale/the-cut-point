@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300" width="240" height="300" role="img">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f7f8fa"/><stop offset="1" stop-color="#eaedf1"/>
+  </linearGradient>
+  <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f2d3ba"/><stop offset="1" stop-color="#e0b393"/>
+  </linearGradient>
+  <linearGradient id="hair" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#413a48"/><stop offset="0.55" stop-color="#2c2731"/>
+    <stop offset="1" stop-color="#1e1b23"/>
+  </linearGradient>
+  <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#2c2731"/>
+    <stop offset="1" stop-color="#2c2731" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="garment" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#3f4b5b"/><stop offset="1" stop-color="#333d4a"/>
+  </linearGradient>
+</defs>
+<rect width="240" height="300" rx="18" fill="url(#bg)"/>
+<path d="M44,300 C52,236 84,214 120,214 C156,214 188,236 196,300 Z" fill="url(#garment)"/><path d="M104,196 L136,196 L134,214 C128,222 112,222 106,214 Z" fill="url(#skin)"/><path d="M104,196 L136,196 L135,205 C128,210 112,210 105,205 Z" fill="#d3a482" opacity="0.5"/>
+<path d="M71.0,120 C71.0,40 169.0,40 169.0,120 L169.0,150 C169.0,168 71.0,168 71.0,150 Z" fill="url(#hair)"/>
+<ellipse cx="110.0" cy="60" rx="26" ry="10" fill="#6d6675" opacity="0.22"/>
+</svg>

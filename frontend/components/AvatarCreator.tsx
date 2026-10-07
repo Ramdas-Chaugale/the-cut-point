@@ -49,7 +49,7 @@ export function AvatarCreator({ onExported }: { onExported: (url: string) => voi
       src={src}
       title="Ready Player Me avatar creator"
       allow="camera *; microphone *; clipboard-write"
-      className="h-[600px] w-full rounded-xl border border-zinc-200 dark:border-zinc-800"
+      className="h-[600px] w-full rounded-xl border border-line"
     />
   );
 }

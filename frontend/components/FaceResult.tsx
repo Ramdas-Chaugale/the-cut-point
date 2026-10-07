@@ -26,18 +26,18 @@ export function FaceResult({ result }: { result: AnalyzeResponse }) {
     <div className="flex flex-col gap-6">
       {/* Headline result */}
       <div>
-        <p className="text-sm uppercase tracking-widest text-zinc-500">
+        <p className="text-sm uppercase tracking-widest text-ink-faint">
           Predicted face shape
         </p>
         <div className="mt-1 flex items-baseline gap-3">
-          <h2 className="text-3xl font-semibold text-zinc-900 dark:text-zinc-50">
+          <h2 className="text-3xl font-semibold text-ink">
             {SHAPE_LABEL[result.shape]}
           </h2>
-          <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-sm font-medium text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
+          <span className="rounded-full bg-accent-soft px-2.5 py-0.5 text-sm font-medium text-accent">
             {confidencePct}% confidence
           </span>
         </div>
-        <p className="mt-2 max-w-prose text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+        <p className="mt-2 max-w-prose text-sm leading-relaxed text-ink-soft">
           {result.description}
         </p>
       </div>
@@ -48,7 +48,7 @@ export function FaceResult({ result }: { result: AnalyzeResponse }) {
           {result.quality.warnings.map((w) => (
             <li
               key={w}
-              className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-700/50 dark:bg-amber-950/40 dark:text-amber-200"
+              className="rounded-lg border border-caution-line bg-caution-soft px-3 py-2 text-sm text-caution"
             >
               {w}
             </li>
@@ -58,7 +58,7 @@ export function FaceResult({ result }: { result: AnalyzeResponse }) {
 
       {/* Score breakdown */}
       <div>
-        <p className="mb-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <p className="mb-2 text-sm font-medium text-ink-soft">
           How every shape scored
         </p>
         <ul className="space-y-1.5">
@@ -67,18 +67,18 @@ export function FaceResult({ result }: { result: AnalyzeResponse }) {
             const isTop = shape === result.shape;
             return (
               <li key={shape} className="flex items-center gap-3 text-sm">
-                <span className="w-20 shrink-0 text-zinc-600 dark:text-zinc-400">
+                <span className="w-20 shrink-0 text-ink-soft">
                   {SHAPE_LABEL[shape]}
                 </span>
-                <span className="relative h-2.5 flex-1 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+                <span className="relative h-2.5 flex-1 overflow-hidden rounded-full bg-line">
                   <span
                     className={`absolute inset-y-0 left-0 rounded-full ${
-                      isTop ? "bg-emerald-500" : "bg-zinc-400 dark:bg-zinc-600"
+                      isTop ? "bg-positive" : "bg-ink-faint"
                     }`}
                     style={{ width: `${Math.max(pct, 2)}%` }}
                   />
                 </span>
-                <span className="w-9 shrink-0 text-right tabular-nums text-zinc-500">
+                <span className="w-9 shrink-0 text-right tabular-nums text-ink-faint">
                   {pct}%
                 </span>
               </li>
@@ -89,7 +89,7 @@ export function FaceResult({ result }: { result: AnalyzeResponse }) {
 
       {/* Measured ratios — transparency */}
       <div>
-        <p className="mb-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <p className="mb-2 text-sm font-medium text-ink-soft">
           Measured facial geometry
         </p>
         <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:grid-cols-3">
@@ -97,16 +97,16 @@ export function FaceResult({ result }: { result: AnalyzeResponse }) {
             Object.keys(RATIO_LABELS) as (keyof AnalyzeResponse["ratios"])[]
           ).map((key) => (
             <div key={key} className="flex flex-col">
-              <dt className="text-zinc-500">{RATIO_LABELS[key]}</dt>
-              <dd className="font-mono text-zinc-800 dark:text-zinc-200">
+              <dt className="text-ink-faint">{RATIO_LABELS[key]}</dt>
+              <dd className="font-mono text-ink">
                 {result.ratios[key]}
               </dd>
             </div>
           ))}
         </dl>
-        <p className="mt-3 text-xs text-zinc-400">
+        <p className="mt-3 text-xs text-ink-faint">
           Measured from facial bone-structure landmarks only (jaw, cheekbones,
-          forehead, chin) — so the result is unaffected by hair, baldness, or a
+          forehead, chin), so the result is unaffected by hair, baldness, or a
           covered forehead.
         </p>
       </div>

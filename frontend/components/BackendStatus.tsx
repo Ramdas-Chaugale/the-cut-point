@@ -29,13 +29,13 @@ export function BackendStatus() {
 
   const dot =
     state.kind === "ok"
-      ? "bg-emerald-500"
+      ? "bg-positive"
       : state.kind === "error"
-        ? "bg-red-500"
-        : "bg-amber-400 animate-pulse";
+        ? "bg-negative"
+        : "bg-caution animate-pulse";
 
   return (
-    <div className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/60 px-3 py-1.5 text-sm dark:border-white/15 dark:bg-white/5">
+    <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface-raised/70 px-3 py-1.5 text-sm shadow-sm">
       <span className={`h-2.5 w-2.5 rounded-full ${dot}`} aria-hidden />
       {state.kind === "loading" && <span>Connecting to API…</span>}
       {state.kind === "ok" && (
@@ -45,7 +45,7 @@ export function BackendStatus() {
         </span>
       )}
       {state.kind === "error" && (
-        <span>API offline — {state.message}</span>
+        <span>API offline. {state.message}</span>
       )}
     </div>
   );

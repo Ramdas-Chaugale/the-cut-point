@@ -206,7 +206,7 @@ export function FaceAnalyzer({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={busy}
-            className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+            className="px-4 py-2 disabled:opacity-50 rounded-lg bg-accent text-sm font-semibold text-accent-ink shadow-sm transition-colors hover:bg-accent-hover"
           >
             Upload a photo
           </button>
@@ -215,14 +215,14 @@ export function FaceAnalyzer({
               <button
                 type="button"
                 onClick={capturePhoto}
-                className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500"
+                className="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-ink shadow-sm transition-colors hover:bg-accent-hover"
               >
                 Capture
               </button>
               <button
                 type="button"
                 onClick={stopCamera}
-                className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300"
+                className="rounded-lg border border-line-strong px-4 py-2 text-sm font-medium text-ink-soft hover:bg-surface-sunken"
               >
                 Cancel
               </button>
@@ -232,7 +232,7 @@ export function FaceAnalyzer({
               type="button"
               onClick={startCamera}
               disabled={busy}
-              className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100 disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300"
+              className="rounded-lg border border-line-strong px-4 py-2 text-sm font-medium text-ink-soft hover:bg-surface-sunken disabled:opacity-50"
             >
               Use camera
             </button>
@@ -241,7 +241,7 @@ export function FaceAnalyzer({
             <button
               type="button"
               onClick={reset}
-              className="rounded-md px-4 py-2 text-sm font-medium text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
+              className="rounded-lg px-4 py-2 text-sm font-medium text-ink-faint hover:text-ink"
             >
               Start over
             </button>
@@ -260,7 +260,7 @@ export function FaceAnalyzer({
           }}
         />
 
-        <div className="relative flex min-h-64 items-center justify-center overflow-hidden rounded-lg border border-dashed border-zinc-300 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900/40">
+        <div className="relative flex min-h-64 items-center justify-center overflow-hidden rounded-lg border border-dashed border-line-strong bg-surface-sunken">
           <video
             ref={videoRef}
             className={cameraOn ? "max-h-[460px] w-auto" : "hidden"}
@@ -269,18 +269,17 @@ export function FaceAnalyzer({
           />
           <canvas
             ref={canvasRef}
-            className={cameraOn || !hasImage ? "hidden" : "max-w-full rounded-md"}
+            className={cameraOn || !hasImage ? "hidden" : "max-w-full rounded-lg"}
           />
           {!cameraOn && !hasImage && (
-            <p className="px-6 text-center text-sm text-zinc-400">
-              Upload or capture a clear, front-facing photo. Works on bald and
-              short-haired faces.
+            <p className="px-6 text-center text-sm text-ink-faint">
+              Drop a clear, front-facing photo here.
             </p>
           )}
           {busy && (
-            <div className="absolute inset-0 flex items-center justify-center bg-white/70 backdrop-blur-sm dark:bg-black/60">
-              <span className="flex items-center gap-2 text-sm font-medium text-zinc-700 dark:text-zinc-200">
-                <span className="h-3 w-3 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+            <div className="absolute inset-0 flex items-center justify-center bg-surface/70 backdrop-blur-sm">
+              <span className="flex items-center gap-2 text-sm font-medium text-ink-soft">
+                <span className="h-3 w-3 animate-spin rounded-full border-2 border-accent border-t-transparent" />
                 {status.kind === "working" ? status.message : "Working…"}
               </span>
             </div>
@@ -291,13 +290,13 @@ export function FaceAnalyzer({
       {/* Right: results / messages */}
       <div className="flex flex-col">
         {status.kind === "error" && (
-          <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-800/50 dark:bg-red-950/40 dark:text-red-200">
+          <div className="rounded-lg border border-negative-line bg-negative-soft px-4 py-3 text-sm text-negative">
             {status.message}
           </div>
         )}
         {status.kind === "done" && <FaceResult result={status.result} />}
         {(status.kind === "idle" || busy) && (
-          <div className="flex h-full min-h-48 items-center justify-center rounded-lg border border-zinc-200 text-center text-sm text-zinc-400 dark:border-zinc-800">
+          <div className="flex h-full min-h-48 items-center justify-center rounded-lg border border-line text-center text-sm text-ink-faint">
             Your face-shape analysis will appear here.
           </div>
         )}

@@ -43,16 +43,18 @@ export default function AppointmentsPage() {
   };
 
   if (loading) {
-    return <div className="mx-auto max-w-3xl px-6 py-16 text-sm text-zinc-400">Loading…</div>;
+    return <div className="mx-auto max-w-3xl px-6 py-16 text-sm text-ink-faint">Loading…</div>;
   }
 
   if (!user) {
     return (
       <div className="mx-auto max-w-3xl px-6 py-16">
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">Log in to see your appointments.</p>
+        <p className="text-lg text-ink-soft">
+          Log in to see what you have booked and what each salon has said.
+        </p>
         <Link
           href="/login?next=/appointments"
-          className="mt-3 inline-block rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
+          className="mt-3 inline-block px-4 py-2 rounded-lg bg-accent text-sm font-semibold text-accent-ink shadow-sm transition-colors hover:bg-accent-hover"
         >
           Log in
         </Link>
@@ -62,9 +64,9 @@ export default function AppointmentsPage() {
 
   if (user.role !== "client") {
     return (
-      <div className="mx-auto max-w-3xl px-6 py-16 text-sm text-zinc-500">
+      <div className="mx-auto max-w-3xl px-6 py-16 text-sm text-ink-faint">
         This page is for client accounts. Visit your{" "}
-        <Link href="/dashboard" className="text-emerald-600 hover:underline">
+        <Link href="/dashboard" className="text-accent hover:underline">
           salon dashboard
         </Link>{" "}
         instead.
@@ -74,20 +76,26 @@ export default function AppointmentsPage() {
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6">
-      <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+      <h1 className="text-3xl font-bold text-ink sm:text-4xl">
         My appointments
       </h1>
+      <p className="mt-2 text-lg leading-relaxed text-ink-soft">
+        Every request you have sent, and where each one stands.
+      </p>
 
-      {error && <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="mt-3 text-sm text-negative">{error}</p>}
 
       {bookings === null ? (
-        <p className="mt-6 text-sm text-zinc-400">Loading…</p>
+        <p className="mt-6 text-sm text-ink-faint">Loading…</p>
       ) : bookings.length === 0 ? (
-        <div className="mt-6 rounded-xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
-          <p className="text-sm text-zinc-500">No appointments yet.</p>
+        <div className="mt-6 rounded-xl border border-dashed border-line-strong p-8 text-center">
+          <p className="font-medium text-ink">Nothing booked yet</p>
+          <p className="mt-1 text-sm text-ink-faint">
+            Find a salon, pick a time that suits you, and it will show up here.
+          </p>
           <Link
             href="/salons"
-            className="mt-3 inline-block rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
+            className="mt-3 inline-block px-4 py-2 rounded-lg bg-accent text-sm font-semibold text-accent-ink shadow-sm transition-colors hover:bg-accent-hover"
           >
             Find a salon
           </Link>
@@ -100,25 +108,25 @@ export default function AppointmentsPage() {
             return (
               <li
                 key={b.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-200 px-4 py-3 dark:border-zinc-800"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line px-4 py-3"
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="font-medium text-zinc-900 dark:text-zinc-100">{b.service_name}</p>
+                    <p className="font-medium text-ink">{b.service_name}</p>
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${badge.cls}`}>
                       {badge.label}
                     </span>
                   </div>
-                  <p className="mt-0.5 text-sm text-zinc-500">
+                  <p className="mt-0.5 text-sm text-ink-faint">
                     {b.salon_name} · {fmt(b.start_at)} · {formatPrice(b.price_pennies)}
                   </p>
                   {b.look_style_id && (
-                    <p className="mt-0.5 text-xs text-violet-600 dark:text-violet-400">
+                    <p className="mt-0.5 text-xs text-ai">
                       Bringing a saved look
                     </p>
                   )}
                   {b.status === "declined" && b.suggested_start_at && (
-                    <p className="mt-0.5 text-xs text-amber-600 dark:text-amber-400">
+                    <p className="mt-0.5 text-xs text-caution">
                       Salon suggested {fmt(b.suggested_start_at)} instead
                     </p>
                   )}
@@ -127,7 +135,7 @@ export default function AppointmentsPage() {
                   <button
                     type="button"
                     onClick={() => onCancel(b.id)}
-                    className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                    className="rounded-lg border border-line-strong px-3 py-1.5 text-sm font-medium text-ink-soft hover:bg-surface-sunken"
                   >
                     Cancel
                   </button>

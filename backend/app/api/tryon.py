@@ -14,7 +14,7 @@ router = APIRouter(prefix="/api/tryon", tags=["tryon"])
 def generate(payload: TryOnRequest) -> TryOnResponse:
     """Generate a photorealistic image of the user wearing the chosen style."""
     try:
-        url = svc.generate_tryon(payload.image_data_url, payload.style_id)
+        url = svc.generate_tryon(payload.image_data_url, payload.style_id, payload.mask_data_url)
     except svc.TryOnError as exc:
         # 503 when the feature isn't configured; 502 for upstream failures.
         code = (
