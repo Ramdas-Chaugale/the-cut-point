@@ -188,13 +188,30 @@ def _back_mass(p: Hair) -> str:
 
 
 def _curly_blob(cx: float, cy: float, rx: float, ry: float, n: int = 26) -> str:
+    """A soft hair mass with curl texture on its edge.
+
+    The points alternate between a slightly larger and slightly smaller radius,
+    which is what suggests curl. They are joined with quadratic curves through
+    the midpoint of each pair, so the outline stays smooth. Joining them with
+    straight lines instead turns the same points into a cog, which is what this
+    used to draw.
+    """
     pts = []
     for i in range(n):
         a = 2 * math.pi * i / n
-        bump = 1.0 + (0.12 if i % 2 == 0 else -0.03)
+        bump = 1.0 + (0.055 if i % 2 == 0 else -0.02)
         pts.append((cx + rx * bump * math.cos(a), cy + ry * bump * math.sin(a)))
-    d = "M" + " L".join(f"{x:.1f},{y:.1f}" for x, y in pts) + " Z"
-    return f'<path d="{d}" fill="url(#hair)"/>'
+
+    def mid(p, q):
+        return ((p[0] + q[0]) / 2, (p[1] + q[1]) / 2)
+
+    sx, sy = mid(pts[-1], pts[0])
+    d = [f"M{sx:.1f},{sy:.1f}"]
+    for i, p in enumerate(pts):
+        mx, my = mid(p, pts[(i + 1) % n])
+        d.append(f"Q{p[0]:.1f},{p[1]:.1f} {mx:.1f},{my:.1f}")
+    d.append("Z")
+    return f'<path d="{" ".join(d)}" fill="url(#hair)"/>'
 
 
 def _top(p: Hair) -> str:

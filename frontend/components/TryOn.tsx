@@ -21,13 +21,16 @@ import type { StyleRecommendation } from "@/lib/recommendTypes";
 const CHEEK_R = 234; // subject's right (image left)
 const CHEEK_L = 454; // subject's left  (image right)
 
-// Overlay reference frame (see tools/generate_hair_assets.py overlay()):
-// the face ellipse is centred at (100,104) with rx=40, so its widest points —
-// the cheekbones — are at (60,104) and (140,104) in the 200x260 artwork.
-const OVERLAY_W = 200;
-const OVERLAY_H = 260;
-const A0 = { x: 60, y: 104 }; // maps to CHEEK_R
-const B0 = { x: 140, y: 104 }; // maps to CHEEK_L
+// Overlay reference frame. These four numbers must match the artwork that
+// tools/generate_hair_assets.py emits: VIEWBOX is 240x300 and the head is drawn
+// centred on CX = 120, its widest points sitting at x = 75 and x = 165 around
+// y = 118. Those widest points are the cheekbones, which is what the transform
+// below anchors to. If the generator's viewBox or CX changes, change these too,
+// or every overlay lands at the wrong size and drifts onto the face.
+const OVERLAY_W = 240;
+const OVERLAY_H = 300;
+const A0 = { x: 75, y: 118 }; // maps to CHEEK_R
+const B0 = { x: 165, y: 118 }; // maps to CHEEK_L
 const MAX_W = 460;
 
 interface Nudge {
@@ -62,7 +65,16 @@ export function TryOn({
   useEffect(() => {
     let active = true;
     getHealth()
-      .then((h) => active && setAiEnabled(Boolean(h.ai_tryon_enabled)))
+      .then((h) => {
+        if (!active) return;
+        const on = Boolean(h.ai_tryon_enabled);
+        setAiEnabled(on);
+        // Open on the realistic result when it is available. The 2D overlay is
+        // a rough guide, so it should be the fallback rather than the first
+        // thing anyone sees. Staying on "overlay" when AI is off matters: the
+        // mode switch is not rendered then, so there would be no way back.
+        if (on) setMode("ai");
+      })
       .catch(() => {});
     return () => {
       active = false;
