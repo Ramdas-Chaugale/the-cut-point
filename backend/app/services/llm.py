@@ -110,7 +110,7 @@ def _complete(messages: list[dict[str, str]]) -> str:
         model=settings.groq_model,
         messages=messages,  # type: ignore[arg-type]
         temperature=0.5,
-        max_tokens=160,
+        max_tokens=400,
     )
     return (completion.choices[0].message.content or "").strip()
 

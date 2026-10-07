@@ -33,7 +33,7 @@ def test_explain_uses_llm_when_enabled(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(llm, "_complete", lambda messages: "Bespoke AI text.")
     resp = client.post(
         "/api/explain",
-        json={"style_id": "pixie-cut", "face_shape": "heart", "hair_type": "wavy"},
+        json={"style_id": "textured-pixie", "face_shape": "heart", "hair_type": "wavy"},
     )
     assert resp.status_code == 200
     body = resp.json()

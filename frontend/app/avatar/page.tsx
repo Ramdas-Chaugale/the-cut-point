@@ -13,11 +13,11 @@ export default function AvatarPage() {
 
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6">
-      <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+      <h1 className="text-3xl font-bold text-ink sm:text-4xl">
         Your 3D avatar
       </h1>
-      <p className="mt-1 max-w-prose text-sm text-zinc-600 dark:text-zinc-400">
-        Build a 3D avatar of yourself with Ready Player Me — you can start from a selfie.
+      <p className="mt-1 max-w-prose text-sm text-ink-soft">
+        Build a 3D avatar of yourself with Ready Player Me, starting from a selfie if you like.
         This is a standalone showcase; the avatar uses Ready Player Me&apos;s own hair
         options, so it doesn&apos;t wear CutPoint&apos;s 2D hairstyle catalog.
       </p>
@@ -27,7 +27,7 @@ export default function AvatarPage() {
           <AvatarCreator onExported={setGlb} />
         ) : (
           <div className="flex flex-col items-start gap-4">
-            <div className="w-full overflow-hidden rounded-xl border border-zinc-200 bg-gradient-to-b from-zinc-50 to-zinc-100 dark:border-zinc-800 dark:from-zinc-900 dark:to-zinc-950">
+            <div className="w-full overflow-hidden rounded-xl border border-line bg-gradient-to-b from-surface-sunken to-surface-sunken">
               <model-viewer
                 src={glb}
                 alt="Your 3D avatar"
@@ -43,7 +43,7 @@ export default function AvatarPage() {
               <button
                 type="button"
                 onClick={() => setGlb(null)}
-                className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300"
+                className="rounded-lg border border-line-strong px-4 py-2 text-sm font-medium text-ink-soft hover:bg-surface-sunken"
               >
                 Create another
               </button>
@@ -51,12 +51,12 @@ export default function AvatarPage() {
                 href={glb}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900"
+                className="px-4 py-2 rounded-lg bg-accent text-sm font-semibold text-accent-ink shadow-sm transition-colors hover:bg-accent-hover"
               >
                 Download .glb
               </a>
             </div>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-ink-faint">
               Drag to rotate · scroll to zoom. Powered by Ready Player Me &amp; model-viewer.
             </p>
           </div>

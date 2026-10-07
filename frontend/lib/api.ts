@@ -18,6 +18,13 @@ import type {
   RecommendRequest,
   RecommendResponse,
 } from "./recommendTypes";
+import type {
+  AssistantRequest,
+  AssistantResponse,
+  SearchHit,
+  SearchRequest,
+  SearchResponse,
+} from "./searchTypes";
 
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
@@ -122,14 +129,37 @@ export function explainStyle(req: ExplainRequest): Promise<ExplainResponse> {
   return apiPost<ExplainResponse>("/api/explain", req);
 }
 
-/** Generate a photorealistic AI try-on (fal.ai) of the user wearing a style. */
+/** Rank the catalogue against a free-text description of what someone wants. */
+export function searchStyles(req: SearchRequest): Promise<SearchResponse> {
+  return apiPost<SearchResponse>("/api/search", req);
+}
+
+/** Ask a styling question; the answer is grounded in the catalogue. */
+export function askStylist(req: AssistantRequest): Promise<AssistantResponse> {
+  return apiPost<AssistantResponse>("/api/assistant", req);
+}
+
+/** The whole catalogue, for browsing without running a face analysis first. */
+export function listStyles(): Promise<SearchHit[]> {
+  return apiGet<SearchHit[]>("/api/styles");
+}
+
+/**
+ * Generate a photorealistic try-on of the user wearing a style.
+ *
+ * Passing a mask selects the free inpainting provider, which paints hair into
+ * the masked region only and therefore cannot alter the face. Without one the
+ * request falls through to whole-image editing.
+ */
 export function generateTryOn(
   imageDataUrl: string,
   styleId: string,
+  maskDataUrl?: string | null,
 ): Promise<{ image_url: string }> {
   return apiPost<{ image_url: string }>("/api/tryon/generate", {
     image_data_url: imageDataUrl,
     style_id: styleId,
+    mask_data_url: maskDataUrl ?? null,
   });
 }
 

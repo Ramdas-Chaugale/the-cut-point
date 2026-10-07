@@ -1,7 +1,18 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  Minus,
+  Plus,
+  RotateCcw,
+  Sparkles,
+} from "lucide-react";
 import { generateTryOn, getHealth } from "@/lib/api";
+import { buildHairMask } from "@/lib/hairMask";
 import type { AnalysisPayload } from "@/lib/faceTypes";
 import type { StyleRecommendation } from "@/lib/recommendTypes";
 
@@ -62,7 +73,10 @@ export function TryOn({
     setAiLoading(true);
     setAiError("");
     try {
-      const res = await generateTryOn(payload.photo, style.id);
+      // The mask keeps the model inside the hair region, so the face in the
+      // result is the original photograph rather than a regenerated one.
+      const mask = buildHairMask(payload);
+      const res = await generateTryOn(payload.photo, style.id, mask);
       setAiImage(res.image_url);
     } catch (e) {
       const msg = (e as Error).message || "";
@@ -73,7 +87,7 @@ export function TryOn({
       );
       setAiError(
         optional
-          ? "Realistic AI try-on is an optional add-on that runs on a paid image model (fal.ai). The integration is fully built and tested — add fal.ai credits to enable live generation."
+          ? "Realistic AI try-on runs on a paid image model (fal.ai). The integration is built and tested; it needs credits on the account to generate."
           : msg,
       );
     } finally {
@@ -169,10 +183,10 @@ export function TryOn({
     <section className="mt-12">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-            Virtual try-on — {style.name}
+          <h2 className="text-xl font-semibold tracking-tight text-ink">
+            Virtual try-on · {style.name}
           </h2>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="mt-1 text-sm text-ink-faint">
             {mode === "overlay"
               ? "A 2D overlay anchored to your facial landmarks (not a neural render). Nudge it for a perfect fit."
               : "A photorealistic AI edit of your own photo wearing this style."}
@@ -181,25 +195,35 @@ export function TryOn({
         <button
           type="button"
           onClick={onBack}
-          className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-line-strong px-3 py-1.5 text-sm font-medium text-ink-soft transition-colors hover:border-accent hover:text-accent"
         >
-          ← Try another
+          <ArrowLeft className="h-4 w-4" aria-hidden />
+          Try another
         </button>
       </div>
 
       {aiEnabled && (
-        <div className="mt-4 inline-flex rounded-lg border border-zinc-200 p-1 dark:border-zinc-800">
+        <div className="mt-4 inline-flex rounded-lg border border-line p-1">
           <ModeBtn active={mode === "overlay"} onClick={() => setMode("overlay")} label="2D overlay" />
-          <ModeBtn active={mode === "ai"} onClick={() => setMode("ai")} label="Realistic AI ✨" />
+          <ModeBtn
+            active={mode === "ai"}
+            onClick={() => setMode("ai")}
+            label={
+              <span className="inline-flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5" aria-hidden />
+                Realistic AI
+              </span>
+            }
+          />
         </div>
       )}
 
       {mode === "overlay" ? (
       <div className="mt-5 flex flex-col gap-5 sm:flex-row sm:items-start">
-        <div className="relative overflow-hidden rounded-lg border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/40">
+        <div className="relative overflow-hidden rounded-lg border border-line bg-surface-sunken">
           <canvas ref={canvasRef} className="block max-w-full" />
           {!ready && (
-            <div className="absolute inset-0 flex items-center justify-center text-sm text-zinc-400">
+            <div className="absolute inset-0 flex items-center justify-center text-sm text-ink-faint">
               Preparing your try-on…
             </div>
           )}
@@ -208,34 +232,34 @@ export function TryOn({
         {/* Controls */}
         <div className="flex flex-col gap-4">
           <div>
-            <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-zinc-400">
+            <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-ink-faint">
               Fine-tune position
             </p>
             <div className="grid w-32 grid-cols-3 gap-1.5">
               <span />
-              <NudgeBtn onClick={() => move(0, -4)} label="↑" />
+              <NudgeBtn onClick={() => move(0, -4)} label={<ArrowUp className="h-4 w-4" />} title="Move up" />
               <span />
-              <NudgeBtn onClick={() => move(-4, 0)} label="←" />
-              <NudgeBtn onClick={() => setNudge(NEUTRAL)} label="⟳" title="Reset" />
-              <NudgeBtn onClick={() => move(4, 0)} label="→" />
+              <NudgeBtn onClick={() => move(-4, 0)} label={<ArrowLeft className="h-4 w-4" />} title="Move left" />
+              <NudgeBtn onClick={() => setNudge(NEUTRAL)} label={<RotateCcw className="h-4 w-4" />} title="Reset position" />
+              <NudgeBtn onClick={() => move(4, 0)} label={<ArrowRight className="h-4 w-4" />} title="Move right" />
               <span />
-              <NudgeBtn onClick={() => move(0, 4)} label="↓" />
+              <NudgeBtn onClick={() => move(0, 4)} label={<ArrowDown className="h-4 w-4" />} title="Move down" />
               <span />
             </div>
           </div>
           <div>
-            <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-zinc-400">
+            <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-ink-faint">
               Size
             </p>
             <div className="flex gap-1.5">
-              <NudgeBtn onClick={() => zoom(-0.05)} label="−" />
-              <NudgeBtn onClick={() => zoom(0.05)} label="+" />
+              <NudgeBtn onClick={() => zoom(-0.05)} label={<Minus className="h-4 w-4" />} title="Smaller" />
+              <NudgeBtn onClick={() => zoom(0.05)} label={<Plus className="h-4 w-4" />} title="Bigger" />
             </div>
           </div>
           <button
             type="button"
             onClick={download}
-            className="mt-1 rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+            className="mt-1 px-4 py-2 rounded-lg bg-accent text-sm font-semibold text-accent-ink shadow-sm transition-colors hover:bg-accent-hover"
           >
             Download PNG
           </button>
@@ -249,14 +273,14 @@ export function TryOn({
               <img
                 src={aiImage}
                 alt={`AI try-on of ${style.name}`}
-                className="max-h-[480px] w-auto rounded-lg border border-zinc-200 dark:border-zinc-800"
+                className="max-h-[480px] w-auto rounded-lg border border-line"
               />
               <div className="flex gap-2">
                 <a
                   href={aiImage}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900"
+                  className="px-4 py-2 rounded-lg bg-accent text-sm font-semibold text-accent-ink shadow-sm transition-colors hover:bg-accent-hover"
                 >
                   Open full image
                 </a>
@@ -264,21 +288,21 @@ export function TryOn({
                   type="button"
                   onClick={runAiTryOn}
                   disabled={aiLoading}
-                  className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100 disabled:opacity-60 dark:border-zinc-700 dark:text-zinc-300"
+                  className="rounded-lg border border-line-strong px-4 py-2 text-sm font-medium text-ink-soft hover:bg-surface-sunken disabled:opacity-60"
                 >
                   Regenerate
                 </button>
               </div>
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-ink-faint">
                 AI-generated preview · your face is preserved; only the hair changes.
               </p>
             </div>
           ) : (
-            <div className="max-w-md rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
-              <span className="inline-block rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-violet-700 dark:bg-violet-900/40 dark:text-violet-300">
+            <div className="max-w-md rounded-xl border border-line p-5">
+              <span className="inline-block rounded-full bg-ai-soft px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-ai">
                 Optional add-on
               </span>
-              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+              <p className="mt-2 text-sm text-ink-soft">
                 Generate a <span className="font-medium">photorealistic</span> image of you
                 wearing the <span className="font-medium">{style.name}</span>, edited from your
                 own photo.
@@ -287,7 +311,7 @@ export function TryOn({
                 type="button"
                 onClick={runAiTryOn}
                 disabled={aiLoading}
-                className="mt-3 inline-flex items-center gap-2 rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-500 disabled:opacity-60"
+                className="mt-3 inline-flex items-center gap-2 rounded-lg bg-ai px-4 py-2 text-sm font-semibold text-ai-ink transition-colors hover:bg-ai-hover disabled:opacity-60"
               >
                 {aiLoading ? (
                   <>
@@ -299,11 +323,11 @@ export function TryOn({
                 )}
               </button>
               {aiError && (
-                <p className="mt-3 text-sm text-amber-600 dark:text-amber-400">
-                  Couldn&apos;t generate right now — {aiError}
+                <p className="mt-3 text-sm text-caution">
+                  Couldn&apos;t generate right now. {aiError}
                 </p>
               )}
-              <p className="mt-3 text-xs text-zinc-400">
+              <p className="mt-3 text-xs text-ink-faint">
                 Uses a generative AI model. Takes a few seconds; results are an approximation.
               </p>
             </div>
@@ -321,16 +345,16 @@ function ModeBtn({
 }: {
   active: boolean;
   onClick: () => void;
-  label: string;
+  label: React.ReactNode;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+      className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
         active
-          ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
-          : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+          ? "bg-accent-soft text-accent"
+          : "text-ink-soft hover:text-ink"
       }`}
     >
       {label}
@@ -344,15 +368,16 @@ function NudgeBtn({
   title,
 }: {
   onClick: () => void;
-  label: string;
-  title?: string;
+  label: React.ReactNode;
+  title: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      title={title ?? label}
-      className="flex h-9 items-center justify-center rounded-md border border-zinc-300 text-sm text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+      title={title}
+      aria-label={title}
+      className="flex h-9 items-center justify-center rounded-lg border border-line-strong text-ink-soft transition-colors hover:border-accent hover:text-accent"
     >
       {label}
     </button>

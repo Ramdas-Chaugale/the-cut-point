@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300" width="240" height="300" role="img">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f7f8fa"/><stop offset="1" stop-color="#eaedf1"/>
+  </linearGradient>
+  <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f2d3ba"/><stop offset="1" stop-color="#e0b393"/>
+  </linearGradient>
+  <linearGradient id="hair" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#413a48"/><stop offset="0.55" stop-color="#2c2731"/>
+    <stop offset="1" stop-color="#1e1b23"/>
+  </linearGradient>
+  <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#2c2731"/>
+    <stop offset="1" stop-color="#2c2731" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="garment" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#3f4b5b"/><stop offset="1" stop-color="#333d4a"/>
+  </linearGradient>
+</defs>
+
+<path d="M74,96 C70,120 70,140 74,150 L88,150 C86,130 86,112 90,96 Z" fill="url(#fade)"/><path d="M166,96 C170,120 170,140 166,150 L152,150 C154,130 154,112 150,96 Z" fill="url(#fade)"/>
+<path d="M72,112 C70,42 170,42 168,112 C150,118 90,118 72,112 Z" fill="url(#hair)"/><path d="M74,112 C96,132 144,132 166,112 C150,124 90,124 74,112 Z" fill="url(#hair)"/><ellipse cx="92.0" cy="74.5" rx="24" ry="9" fill="#6d6675" opacity="0.22"/>
+</svg>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { MapPin } from "lucide-react";
 import { listSalons } from "@/lib/api";
 import { haversineKm, type Salon } from "@/lib/bookingTypes";
 import { SalonCard } from "@/components/SalonCard";
@@ -37,7 +38,7 @@ export default function SalonsPage() {
         setLocating(false);
       },
       () => {
-        setGeoError("Couldn't get your location — showing all salons instead.");
+        setGeoError("Couldn't get your location, so every salon is shown.");
         setLocating(false);
       },
       { enableHighAccuracy: false, timeout: 8000 },
@@ -59,29 +60,30 @@ export default function SalonsPage() {
     <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+          <h1 className="text-3xl font-bold text-ink sm:text-4xl">
             Find a salon
           </h1>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="mt-2 max-w-xl text-lg leading-relaxed text-ink-soft">
             {coords
-              ? "Sorted by distance from you."
-              : "Browse our partner salons, or sort by distance."}
+              ? "Closest to you first. Pick one to see its menu and book a time."
+              : "Browse every salon on CutPoint, or sort by how near they are to you."}
           </p>
         </div>
         <button
           type="button"
           onClick={useMyLocation}
           disabled={locating}
-          className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-100 disabled:opacity-60 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-line-strong bg-surface-raised px-3 py-1.5 text-sm font-medium text-ink-soft shadow-sm transition-colors hover:border-accent hover:text-accent disabled:opacity-60"
         >
-          {locating ? "Locating…" : "📍 Use my location"}
+          <MapPin className="h-4 w-4" aria-hidden />
+          {locating ? "Locating…" : "Use my location"}
         </button>
       </div>
 
-      {geoError && <p className="mt-3 text-sm text-amber-600 dark:text-amber-400">{geoError}</p>}
+      {geoError && <p className="mt-3 text-sm text-caution">{geoError}</p>}
       {error && (
-        <div className="mt-6 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-800/50 dark:bg-red-950/40 dark:text-red-200">
-          Couldn&apos;t load salons — {error}
+        <div className="mt-6 rounded-lg border border-negative-line bg-negative-soft px-4 py-3 text-sm text-negative">
+          Couldn&apos;t load salons. {error}
         </div>
       )}
 
@@ -90,7 +92,7 @@ export default function SalonsPage() {
           ? Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="h-64 animate-pulse rounded-xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900"
+                className="h-64 animate-pulse rounded-xl border border-line bg-surface-sunken"
               />
             ))
           : sorted?.map(({ salon, distanceKm }) => (

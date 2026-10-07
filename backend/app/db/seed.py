@@ -73,7 +73,7 @@ SALONS = [
         "jordan@cutpoint.demo",
         {
             "name": "Colour Lounge",
-            "description": "Colour studio — balayage, highlights and full-head colour.",
+            "description": "Colour studio for balayage, highlights and full-head colour.",
             "address": "7 Greek Street, Soho",
             "city": "London",
             "latitude": 51.5138,

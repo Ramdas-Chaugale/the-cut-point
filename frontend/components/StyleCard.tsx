@@ -58,14 +58,14 @@ export function StyleCard({
   };
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="flex flex-col overflow-hidden rounded-xl border border-line bg-surface-raised">
       {/* Header */}
       <div className="flex items-start justify-between gap-2 px-4 pt-4">
-        <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+        <h3 className="text-base font-semibold text-ink">
           {style.name}
         </h3>
         <span
-          className="shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300"
+          className="shrink-0 rounded-full bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent"
           title="How well this style matches your stated preferences"
         >
           {matchPct}% match
@@ -75,12 +75,12 @@ export function StyleCard({
       {/* Multi-angle style preview */}
       <div className="mt-3 px-4">
         <div className="mb-1.5 flex items-center justify-between">
-          <span className="text-[11px] font-medium uppercase tracking-wide text-zinc-400">
+          <span className="text-[11px] font-medium uppercase tracking-wide text-ink-faint">
             Style preview · all angles
           </span>
-          <span className="text-[11px] text-zinc-400">reference, not your photo</span>
+          <span className="text-[11px] text-ink-faint">reference, not your photo</span>
         </div>
-        <div className="flex items-center justify-center rounded-lg bg-zinc-50 py-2 dark:bg-zinc-800/50">
+        <div className="flex items-center justify-center rounded-lg bg-surface-sunken py-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={style.angle_assets[angle]}
@@ -97,10 +97,10 @@ export function StyleCard({
               type="button"
               onClick={() => setAngle(a)}
               aria-pressed={a === angle}
-              className={`rounded-md border px-2 py-1 text-xs font-medium transition-colors ${
+              className={`rounded-lg border px-2 py-1 text-xs font-medium transition-colors ${
                 a === angle
-                  ? "border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
-                  : "border-zinc-200 text-zinc-500 hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+                  ? "border-accent bg-accent-soft text-accent"
+                  : "border-line text-ink-faint hover:bg-surface-sunken"
               }`}
             >
               {ANGLE_LABELS[a]}
@@ -111,7 +111,7 @@ export function StyleCard({
           <button
             type="button"
             onClick={() => onTryOn(style)}
-            className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+            className="px-3 py-2 rounded-lg bg-accent text-sm font-semibold text-accent-ink shadow-sm transition-colors hover:bg-accent-hover"
           >
             Try this on
           </button>
@@ -121,7 +121,7 @@ export function StyleCard({
               saveLook({ id: style.id, name: style.name });
               router.push("/salons");
             }}
-            className="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="rounded-lg border border-line-strong px-3 py-2 text-sm font-medium text-ink-soft transition-colors hover:bg-surface-sunken"
           >
             Book this look
           </button>
@@ -132,12 +132,12 @@ export function StyleCard({
       <div className="mt-3 px-4">
         <div className="mb-1 flex items-center gap-2">
           {aiActive && (
-            <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-violet-700 dark:bg-violet-900/40 dark:text-violet-300">
+            <span className="rounded bg-ai-soft px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ai">
               AI
             </span>
           )}
         </div>
-        <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+        <p className="text-sm leading-relaxed text-ink-soft">
           {explanation}
         </p>
         {llmEnabled && !aiActive && (
@@ -145,11 +145,11 @@ export function StyleCard({
             type="button"
             onClick={refineWithAi}
             disabled={aiLoading}
-            className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-violet-600 hover:text-violet-500 disabled:opacity-60 dark:text-violet-400"
+            className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-ai hover:text-ai-hover disabled:opacity-60"
           >
             {aiLoading ? (
               <>
-                <span className="h-3 w-3 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+                <span className="h-3 w-3 animate-spin rounded-full border-2 border-ai border-t-transparent" />
                 Writing…
               </>
             ) : (
@@ -158,8 +158,8 @@ export function StyleCard({
           </button>
         )}
         {aiError && (
-          <p className="mt-1 text-[11px] text-amber-600 dark:text-amber-400">
-            AI is unavailable right now — showing the standard explanation.
+          <p className="mt-1 text-[11px] text-caution">
+            AI is unavailable right now, so this is the standard explanation.
           </p>
         )}
       </div>
@@ -169,7 +169,7 @@ export function StyleCard({
         {style.rationale_tags.map((t) => (
           <span
             key={t}
-            className="rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+            className="rounded-full bg-surface-sunken px-2 py-0.5 text-[11px] text-ink-soft"
           >
             {RATIONALE_LABELS[t] ?? t}
           </span>
@@ -177,7 +177,7 @@ export function StyleCard({
       </div>
 
       {/* Meta footer */}
-      <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1 border-t border-zinc-100 px-4 py-3 text-xs text-zinc-500 dark:border-zinc-800">
+      <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1 border-t border-line px-4 py-3 text-xs text-ink-faint">
         <span className="capitalize">Length: {style.length}</span>
         <span className="capitalize">Upkeep: {style.maintenance}</span>
         <span className="capitalize">Hair: {style.hair_types.join(", ")}</span>

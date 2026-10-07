@@ -16,7 +16,12 @@
 - Shows each style from **four reference angles** (front / left / right / back).
 - **Virtual try-on**: overlays the chosen style onto the user's own front photo, anchored to facial landmarks. Download the result or try another instantly.
 
-**Part B — Salon Appointment Booking (two-sided)**
+**Part B — Style catalogue, search and stylist assistant**
+- **Search the catalogue in plain English**: "something low maintenance that works with curls" is parsed into the catalogue's own vocabulary (length, hair type, upkeep, presentation, face shape), then used to rank and filter. Each result lists the reasons it matched, so the ranking is inspectable rather than opaque.
+- **Ask the stylist**: a question box answered only from the hairstyle knowledge base, with the entries it used shown beneath the answer. Grounding it this way stops the model describing a cut the catalogue does not contain.
+- Both degrade cleanly: with no API key the search falls back to a deterministic synonym table and the assistant assembles its answer from the retrieved entries directly.
+
+**Part C — Salon Appointment Booking (two-sided)**
 - **Clients**: find nearby salons (geolocation), browse each salon's menu & rates, request a time slot, and track requests in "my appointments" — optionally attaching a saved look ("bring this look").
 - **Salons/barbers**: register a shop, then accept / decline (with a suggested time) incoming requests from a dashboard showing revenue, upcoming/completed appointments and clients.
 - Conflict-free by design (a salon's chairs can't be over-booked); email notifications on request and accept/decline.
@@ -33,7 +38,17 @@ _Coming in later phases._
 
 ## How the AI works (plain English)
 
-> Filled in as Phases 1–4 land. Summary: face-shape detection uses **geometric ratios from MediaPipe's 468 facial landmarks** (jaw width, cheekbone width, face length, forehead/temple width, jaw angle) rather than a CNN — it's explainable, reliable, and robust to baldness/short hair because it measures bone structure, not hair. Recommendations come from a structured knowledge base filtered by user inputs, with natural-language explanations from an LLM (graceful rule-based fallback when no key is present).
+There are four distinct pieces, and none of them is a black box.
+
+**1. Face shape, from geometry.** Detection uses **geometric ratios over MediaPipe's 468 facial landmarks** (jaw width, cheekbone width, face length, forehead and temple width, jaw angle) rather than a CNN. That choice is deliberate: the ratios are explainable, they need no training data, and because they measure bone structure rather than hair they stay accurate on bald and short-haired faces, which is exactly where a hair-trained classifier fails. All of it runs in the browser, so no photo is uploaded.
+
+**2. Recommendation, from a curated knowledge base.** 21 styles are described in a validated YAML file with controlled vocabularies. Ranking scores each style against the detected face shape and the stated preferences, and reports which preferences it satisfied.
+
+**3. Natural-language search, with a deterministic core.** A free-text query is turned into those same controlled vocabularies. A language model does the parsing when a key is configured, because it handles phrasings no keyword table will cover; anything it returns outside the vocabulary is discarded rather than trusted. Retrieval itself is a **TF-IDF index built over the catalogue** at startup. A corpus of 21 documents does not need a vector database, and an in-process index keeps the whole feature deployable with no extra service.
+
+**4. A grounded assistant.** Questions are answered by retrieving the most relevant catalogue entries and giving the model those entries and nothing else. The entries used are returned with the answer and shown in the UI. This is the difference between a chatbot and a product feature: the answer can be checked.
+
+Every LLM call has a deterministic fallback and swallows its own failures, so a missing key, a rate limit or a decommissioned model degrades the experience rather than breaking it.
 
 ---
 
@@ -45,7 +60,8 @@ _Coming in later phases._
 | Computer vision | MediaPipe Tasks Vision (Face Landmarker), in-browser | Heavy CV runs on the user's device — no ML server cost |
 | 2D try-on | HTML Canvas | Landmark-anchored overlay + PNG export |
 | Backend | Python + FastAPI, Pydantic v2, SQLModel, Alembic | Strong AI/ML portfolio signal; typed, migration-managed API |
-| LLM | Groq (Llama 3.3) | Very fast inference; graceful fallback to templated text |
+| LLM | Groq (`openai/gpt-oss-120b`) | Sub-second inference; every call has a deterministic fallback |
+| Retrieval | In-process TF-IDF over the style catalogue | 21 documents; a vector DB would be weight without benefit |
 | Realistic AI try-on | fal.ai Flux Kontext *(optional)* | Photorealistic hair editing; degrades off without a key |
 | 3D avatar | Ready Player Me + `<model-viewer>` *(optional)* | Free selfie→3D avatar showcase |
 | Email | Gmail SMTP (background tasks) | Request/accept/decline notifications; no-op without creds |
@@ -86,11 +102,14 @@ Open http://localhost:3000 — the landing page shows a live **API status badge*
 ### Running tests
 
 ```bash
-# Backend
+# Backend: 127 tests
 cd backend && pytest
 
-# Frontend (added in later phases)
-cd frontend && npm run lint
+# Backend quality gates
+ruff check app tests && black --check app tests && mypy app
+
+# Frontend
+cd frontend && npx eslint app components lib && npm run build
 ```
 
 ---
@@ -100,18 +119,19 @@ cd frontend && npm run lint
 ```
 the_cut_point/
 ├─ frontend/            # Next.js app (UI, MediaPipe, try-on canvas)
-│  ├─ app/              # routes
+│  ├─ app/              # routes (incl. /styles catalogue + search)
 │  ├─ components/       # UI components
 │  ├─ lib/              # api client, geometry, mediapipe helpers
-│  └─ public/assets/    # per-style hair reference images
+│  └─ public/assets/    # per-style hair reference images (generated)
 ├─ backend/             # FastAPI app
 │  ├─ app/
-│  │  ├─ api/           # routers: recommend, booking, auth
+│  │  ├─ api/           # routers: recommend, search, booking, auth, tryon
 │  │  ├─ core/          # config, db
-│  │  ├─ models/        # SQLModel entities
-│  │  ├─ services/      # recommendation, llm, availability
-│  │  └─ knowledge/     # face-shape → styles knowledge base
+│  │  ├─ models/        # SQLModel entities + API schemas
+│  │  ├─ services/      # recommendation, llm, style_search, assistant, email
+│  │  └─ knowledge/     # face-shape → styles knowledge base (YAML)
 │  └─ tests/
+├─ tools/               # asset generator for the style silhouettes
 ├─ docs/                # diagrams, screenshots
 ├─ docker-compose.yml   # local Postgres
 └─ .github/workflows/   # CI (runs once pushed)
@@ -152,7 +172,9 @@ CutPoint offers three honest ways to visualise a style:
 - [x] Phase 11 — Realistic AI try-on (fal.ai Flux Kontext)
 - [x] Phase 12 — 3D avatar (Ready Player Me)
 - [x] Phase 13 — Polish (landing page, mobile nav, 404/500, consistency)
-- [ ] Phase 14 — Local acceptance
+- [x] Phase 14 — Design system (semantic colour tokens, typography, one accent)
+- [x] Phase 15 — Natural-language catalogue search + grounded stylist assistant
+- [ ] Phase 16 — Local acceptance
 - [ ] GitHub, deploy, final README
 
 ---
