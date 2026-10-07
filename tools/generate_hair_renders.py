@@ -20,8 +20,11 @@ lighting, the backdrop and the hair colour, and only the middle sentence
 changes. In practice that holds the look together well enough to read as one
 catalogue.
 
-Cost: roughly 104 neurons per 1024x1024 render against a free allowance of
-10,000 per day, so about 96 images a day at no charge.
+Cost: about 555 neurons per 1024x1024 render against a free allowance of 10,000
+per day, so roughly 18 images a day at no charge. That figure is measured, not
+quoted. Cloudflare documents 26.05 neurons per output 512x512 tile, which would
+put a 1024x1024 render at 104, but a run of 21 exhausted the daily allowance
+after 18 images, twice. See NEURONS_PER_IMAGE below.
 
 Run from the repo root:
     python tools/generate_hair_renders.py --sample
