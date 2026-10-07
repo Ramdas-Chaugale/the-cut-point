@@ -47,3 +47,6 @@ yarn-error.log*
 # ---- Self-hosted MediaPipe assets (provisioned by frontend postinstall) ----
 frontend/public/mediapipe/
 frontend/public/_test/
+
+# ---- Windows crash dumps ----
+*.stackdump
