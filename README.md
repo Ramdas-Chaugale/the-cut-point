@@ -152,6 +152,48 @@ the geometry cannot support.
 
 ---
 
+## Would a trained model do better?
+
+The classifier above is rule based: measure the ratios, compare against seven
+prototypes with hand-set weights, take the nearest. That is a design decision,
+and a design decision deserves testing rather than asserting.
+
+So the rules were put against trained models on the same held-out faces.
+
+![trained models against the shipped rules](docs/figures/classifier_study.png)
+
+| | Accuracy | |
+|---|---|---|
+| Logistic regression | **0.689** | trained |
+| Small MLP | 0.686 | trained |
+| Random forest | 0.660 | trained |
+| **Rules, as shipped** | **0.655** | no training |
+| Always guess the commonest | 0.143 | floor |
+
+**A trained model does win, by 3.4 points, and the difference is real.**
+McNemar's test paired on the same faces gives p = 0.0002, with 101 cases where
+the model is right and the rules wrong against 54 the other way.
+
+It is also modest. The rules need no training data, can be explained to a user
+in one sentence, and degrade at the same rate as the learned model when the
+landmark detector gets noisier. For a feature whose job is to tell someone why a
+haircut suits them, that explainability is worth more than three points, so the
+rules stay in production. If this were ranking at scale rather than explaining to
+a person, the trade would go the other way.
+
+**What this does not show.** The faces are generated from the same seven
+prototypes the rules use, with 10% jitter. So it measures whether learned
+boundaries beat hand-set weights on that distribution. It is **not** evidence
+about real photographs, which would need a labelled dataset of real faces this
+project does not have. That limit is written into the results file as well.
+
+```bash
+python experiments/face_classifier_study.py     # -> results/face_classifier_study.json
+python experiments/make_classifier_figures.py   # -> the figure above
+```
+
+---
+
 ## The catalogue
 
 21 styles described in a validated YAML file with controlled vocabularies. A typo fails at startup
