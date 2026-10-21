@@ -261,6 +261,41 @@ cd frontend && npx eslint app components lib && npm run build
 
 ---
 
+## Where the numbers come from
+
+Every figure and every claim traces back to a file in the repository. Nothing is
+typed into a chart by hand.
+
+| Stage | File | Holds |
+|---|---|---|
+| **Catalogue** | `backend/app/knowledge/hairstyles.yaml` | 21 styles with controlled vocabularies, validated on load |
+| **Geometry** | `services/face_geometry.py` | four measurements, three ratios, normalised to cheekbone width |
+| **Classifier** | `services/face_classifier.py` | seven prototype faces and the distance function |
+| **Ranking** | `services/recommend.py` | scoring, and the reasons returned with each result |
+| **Search** | `services/style_search.py` | TF-IDF index built over the catalogue at startup |
+| **Charts** | `tools/make_readme_figures.py` | `docs/figures/*.png`, from the YAML, the classifier and a pytest run |
+| **Narrative** | `notebooks/walkthrough.ipynb` | imports from `backend/app`, runs the real classifier |
+
+### The walkthrough notebook
+
+**[`notebooks/walkthrough.ipynb`](notebooks/walkthrough.ipynb)** is the quickest
+way to see how this works. It is executed, so outputs and charts render on
+GitHub without cloning.
+
+It runs the real classifier **without a single photograph**, because
+`build_face_landmarks` turns four measurements into a landmark set. It checks
+that all seven prototypes classify as themselves, then morphs a face
+continuously from round to oblong and watches confidence dip exactly where the
+classifier changes its mind, which is what should happen to a face genuinely on
+a boundary. It then runs a real recommendation with its reasons, and measures
+how much choice each face shape actually gets from the catalogue.
+
+```bash
+python tools/build_walkthrough.py   # regenerates and re-executes it
+```
+
+---
+
 ## Running it locally
 
 Prerequisites: **Node 18+**, **Python 3.11+**, **Docker** (for Postgres), **Git**.
@@ -311,7 +346,8 @@ the_cut_point/
 │  │  └─ knowledge/       # the validated style catalogue
 │  ├─ alembic/            # migrations, versioned with the code
 │  └─ tests/              # 139 tests
-├─ tools/                 # asset and figure generators
+├─ tools/                 # asset, figure and notebook generators
+├─ notebooks/             # the walkthrough, executed
 ├─ docs/figures/          # the charts in this README, generated from repo data
 ├─ docker-compose.yml     # local Postgres
 └─ .github/workflows/     # CI

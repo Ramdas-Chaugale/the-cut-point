@@ -50,3 +50,6 @@ frontend/public/_test/
 
 # ---- Windows crash dumps ----
 *.stackdump
+
+# notebook checkpoints
+.ipynb_checkpoints/
