@@ -1,0 +1,539 @@
+{
+ "dataset": "codernotme/face_shape via HuggingFace, five labelled shapes",
+ "provenance": "Photographs of real people, re-hosted by a third party. Only measurements derived from them are committed to this repo, never the images. The re-host states MIT, which cannot govern the underlying photographs, so the images are treated as input to measure and not as a redistributable asset.",
+ "measurements": [
+  "length_to_width",
+  "forehead_to_cheek",
+  "jaw_to_cheek",
+  "forehead_to_jaw",
+  "jaw_angle_deg"
+ ],
+ "n_total": 2000,
+ "n_train": 1400,
+ "n_test": 600,
+ "classes": [
+  "heart",
+  "oblong",
+  "oval",
+  "round",
+  "square"
+ ],
+ "shapes_app_knows_but_dataset_does_not_label": [
+  "diamond",
+  "triangle"
+ ],
+ "literature_for_context": {
+  "features plus gradient boosting (published)": 0.64,
+  "InceptionV3 on pixels (published)": 0.796,
+  "source": "arxiv.org/pdf/1911.07916 and the repos that use this dataset"
+ },
+ "aspect_ratio_check": {
+  "distinct_sizes": 1,
+  "sizes": [
+   {
+    "width": 190,
+    "height": 250,
+    "count": 2000
+   }
+  ],
+  "all_one_size": true,
+  "warning": "Every image is the same pixel size, so the dataset was resized to a fixed frame and the original aspect ratios are gone. Any per-image stretch is now baked in and falls on the width-to-height measurements, length_to_width worst of all. Results from this dataset cannot separate a weak feature from a feature this preprocessing damaged."
+ },
+ "test": {
+  "always most common": {
+   "accuracy": 0.2,
+   "macro_f1": 0.06666666666666667,
+   "collapse": {
+    "classes_used": 1,
+    "largest_share": 1.0,
+    "most_predicted": "heart",
+    "breakdown": {
+     "heart": 600
+    }
+   }
+  },
+  "rules as shipped (7 shapes)": {
+   "accuracy": 0.20166666666666666,
+   "macro_f1": 0.07367157665030005,
+   "collapse": {
+    "classes_used": 4,
+    "largest_share": 0.975,
+    "most_predicted": "round",
+    "breakdown": {
+     "diamond": 1,
+     "oval": 10,
+     "round": 585,
+     "triangle": 4
+    }
+   }
+  },
+  "rules as shipped (5 shapes only)": {
+   "accuracy": 0.20333333333333334,
+   "macro_f1": 0.07664429377105367,
+   "collapse": {
+    "classes_used": 3,
+    "largest_share": 0.98,
+    "most_predicted": "round",
+    "breakdown": {
+     "oval": 11,
+     "round": 588,
+     "square": 1
+    }
+   }
+  },
+  "rules, real centres": {
+   "accuracy": 0.33,
+   "macro_f1": 0.2920599848457494,
+   "collapse": {
+    "classes_used": 5,
+    "largest_share": 0.3516666666666667,
+    "most_predicted": "heart",
+    "breakdown": {
+     "heart": 211,
+     "oblong": 59,
+     "oval": 53,
+     "round": 89,
+     "square": 188
+    }
+   }
+  },
+  "rules, real centres and scales": {
+   "accuracy": 0.35833333333333334,
+   "macro_f1": 0.32993826738521476,
+   "collapse": {
+    "classes_used": 5,
+    "largest_share": 0.315,
+    "most_predicted": "heart",
+    "breakdown": {
+     "heart": 189,
+     "oblong": 68,
+     "oval": 67,
+     "round": 102,
+     "square": 174
+    }
+   }
+  },
+  "logistic regression": {
+   "accuracy": 0.41,
+   "macro_f1": 0.4005886113474907,
+   "collapse": {
+    "classes_used": 5,
+    "largest_share": 0.24833333333333332,
+    "most_predicted": "heart",
+    "breakdown": {
+     "heart": 149,
+     "oblong": 103,
+     "oval": 91,
+     "round": 126,
+     "square": 131
+    }
+   }
+  },
+  "random forest": {
+   "accuracy": 0.4,
+   "macro_f1": 0.39926886459140026,
+   "collapse": {
+    "classes_used": 5,
+    "largest_share": 0.24333333333333335,
+    "most_predicted": "heart",
+    "breakdown": {
+     "heart": 146,
+     "oblong": 88,
+     "oval": 116,
+     "round": 136,
+     "square": 114
+    }
+   }
+  },
+  "small MLP": {
+   "accuracy": 0.3933333333333333,
+   "macro_f1": 0.3878441270787897,
+   "collapse": {
+    "classes_used": 5,
+    "largest_share": 0.27,
+    "most_predicted": "heart",
+    "breakdown": {
+     "heart": 162,
+     "oblong": 76,
+     "oval": 126,
+     "round": 114,
+     "square": 122
+    }
+   }
+  }
+ },
+ "signal_to_noise": {
+  "length_to_width": {
+   "class_medians": {
+    "heart": 1.187,
+    "oblong": 1.189,
+    "oval": 1.177,
+    "round": 1.168,
+    "square": 1.165
+   },
+   "between_class_spread": 0.0099,
+   "within_class_spread": 0.0403,
+   "ratio": 0.245
+  },
+  "forehead_to_cheek": {
+   "class_medians": {
+    "heart": 0.867,
+    "oblong": 0.852,
+    "oval": 0.852,
+    "round": 0.84,
+    "square": 0.837
+   },
+   "between_class_spread": 0.0105,
+   "within_class_spread": 0.0297,
+   "ratio": 0.355
+  },
+  "jaw_to_cheek": {
+   "class_medians": {
+    "heart": 0.793,
+    "oblong": 0.804,
+    "oval": 0.798,
+    "round": 0.809,
+    "square": 0.825
+   },
+   "between_class_spread": 0.011,
+   "within_class_spread": 0.0201,
+   "ratio": 0.549
+  },
+  "forehead_to_jaw": {
+   "class_medians": {
+    "heart": 1.09,
+    "oblong": 1.056,
+    "oval": 1.071,
+    "round": 1.037,
+    "square": 1.011
+   },
+   "between_class_spread": 0.0273,
+   "within_class_spread": 0.0561,
+   "ratio": 0.487
+  },
+  "jaw_angle_deg": {
+   "class_medians": {
+    "heart": 139.905,
+    "oblong": 137.993,
+    "oval": 137.564,
+    "round": 134.748,
+    "square": 131.786
+   },
+   "between_class_spread": 2.8351,
+   "within_class_spread": 3.6251,
+   "ratio": 0.782
+  }
+ },
+ "calibration_gap": {
+  "heart": {
+   "shipped_prototype": {
+    "length_to_width": 1.4,
+    "forehead_to_cheek": 1.0,
+    "jaw_to_cheek": 0.66,
+    "forehead_to_jaw": 1.515,
+    "jaw_angle_deg": 149.448
+   },
+   "real_median": {
+    "length_to_width": 1.187,
+    "forehead_to_cheek": 0.867,
+    "jaw_to_cheek": 0.793,
+    "forehead_to_jaw": 1.09,
+    "jaw_angle_deg": 139.905
+   }
+  },
+  "oblong": {
+   "shipped_prototype": {
+    "length_to_width": 1.75,
+    "forehead_to_cheek": 0.96,
+    "jaw_to_cheek": 0.92,
+    "forehead_to_jaw": 1.043,
+    "jaw_angle_deg": 131.003
+   },
+   "real_median": {
+    "length_to_width": 1.189,
+    "forehead_to_cheek": 0.852,
+    "jaw_to_cheek": 0.804,
+    "forehead_to_jaw": 1.056,
+    "jaw_angle_deg": 137.993
+   }
+  },
+  "oval": {
+   "shipped_prototype": {
+    "length_to_width": 1.5,
+    "forehead_to_cheek": 0.9,
+    "jaw_to_cheek": 0.78,
+    "forehead_to_jaw": 1.154,
+    "jaw_angle_deg": 139.402
+   },
+   "real_median": {
+    "length_to_width": 1.177,
+    "forehead_to_cheek": 0.852,
+    "jaw_to_cheek": 0.798,
+    "forehead_to_jaw": 1.071,
+    "jaw_angle_deg": 137.564
+   }
+  },
+  "round": {
+   "shipped_prototype": {
+    "length_to_width": 1.05,
+    "forehead_to_cheek": 0.92,
+    "jaw_to_cheek": 0.8,
+    "forehead_to_jaw": 1.15,
+    "jaw_angle_deg": 132.922
+   },
+   "real_median": {
+    "length_to_width": 1.168,
+    "forehead_to_cheek": 0.84,
+    "jaw_to_cheek": 0.809,
+    "forehead_to_jaw": 1.037,
+    "jaw_angle_deg": 134.748
+   }
+  },
+  "square": {
+   "shipped_prototype": {
+    "length_to_width": 1.067,
+    "forehead_to_cheek": 0.98,
+    "jaw_to_cheek": 0.96,
+    "forehead_to_jaw": 1.021,
+    "jaw_angle_deg": 117.029
+   },
+   "real_median": {
+    "length_to_width": 1.165,
+    "forehead_to_cheek": 0.837,
+    "jaw_to_cheek": 0.825,
+    "forehead_to_jaw": 1.011,
+    "jaw_angle_deg": 131.786
+   }
+  }
+ },
+ "length_to_width_spread": {
+  "shipped_prototypes": {
+   "min": 1.05,
+   "max": 1.75,
+   "range": 0.7
+  },
+  "real_faces": {
+   "min": 1.165,
+   "max": 1.189,
+   "range": 0.025
+  }
+ },
+ "recalibrated_prototypes": {
+  "heart": {
+   "length_to_width": 1.187,
+   "forehead_to_cheek": 0.867,
+   "jaw_to_cheek": 0.793,
+   "forehead_to_jaw": 1.09,
+   "jaw_angle_deg": 139.905
+  },
+  "oblong": {
+   "length_to_width": 1.189,
+   "forehead_to_cheek": 0.852,
+   "jaw_to_cheek": 0.804,
+   "forehead_to_jaw": 1.056,
+   "jaw_angle_deg": 137.993
+  },
+  "oval": {
+   "length_to_width": 1.177,
+   "forehead_to_cheek": 0.852,
+   "jaw_to_cheek": 0.798,
+   "forehead_to_jaw": 1.071,
+   "jaw_angle_deg": 137.564
+  },
+  "round": {
+   "length_to_width": 1.168,
+   "forehead_to_cheek": 0.84,
+   "jaw_to_cheek": 0.809,
+   "forehead_to_jaw": 1.037,
+   "jaw_angle_deg": 134.748
+  },
+  "square": {
+   "length_to_width": 1.165,
+   "forehead_to_cheek": 0.837,
+   "jaw_to_cheek": 0.825,
+   "forehead_to_jaw": 1.011,
+   "jaw_angle_deg": 131.786
+  }
+ },
+ "scales": {
+  "shipped": {
+   "length_to_width": 0.25,
+   "forehead_to_cheek": 0.12,
+   "jaw_to_cheek": 0.12,
+   "forehead_to_jaw": 0.18,
+   "jaw_angle_deg": 25.0
+  },
+  "from_real_faces": {
+   "length_to_width": 0.0403,
+   "forehead_to_cheek": 0.0297,
+   "jaw_to_cheek": 0.0201,
+   "forehead_to_jaw": 0.0561,
+   "jaw_angle_deg": 3.6251
+  }
+ },
+ "best_learned": "logistic regression",
+ "mcnemar": {
+  "real centres vs shipped": {
+   "baseline_right_other_wrong": 101,
+   "other_right_baseline_wrong": 177,
+   "statistic": 20.23381294964029,
+   "p_value": 6.853086577281098e-06,
+   "significant_at_05": true
+  },
+  "real centres and scales vs shipped": {
+   "baseline_right_other_wrong": 91,
+   "other_right_baseline_wrong": 184,
+   "statistic": 30.778181818181817,
+   "p_value": 2.8927205814542667e-08,
+   "significant_at_05": true
+  },
+  "logistic regression vs shipped": {
+   "baseline_right_other_wrong": 69,
+   "other_right_baseline_wrong": 193,
+   "statistic": 57.7442748091603,
+   "p_value": 2.985076219478898e-14,
+   "significant_at_05": true
+  },
+  "logistic regression vs recalibrated rules": {
+   "baseline_right_other_wrong": 52,
+   "other_right_baseline_wrong": 83,
+   "statistic": 6.666666666666667,
+   "p_value": 0.009823274507519235,
+   "significant_at_05": true
+  }
+ },
+ "frontal_only": {
+  "n": 487,
+  "share_of_test": 0.812,
+  "accuracy": {
+   "always most common": 0.20739219712525667,
+   "rules as shipped (7 shapes)": 0.19917864476386038,
+   "rules as shipped (5 shapes only)": 0.20123203285420946,
+   "rules, real centres": 0.3326488706365503,
+   "rules, real centres and scales": 0.3613963039014374,
+   "logistic regression": 0.4127310061601643,
+   "random forest": 0.38809034907597534,
+   "small MLP": 0.4086242299794661
+  }
+ },
+ "confusion": {
+  "labels": [
+   "heart",
+   "oblong",
+   "oval",
+   "round",
+   "square"
+  ],
+  "rules as shipped (5 shapes only)": [
+   [
+    0,
+    0,
+    4,
+    116,
+    0
+   ],
+   [
+    0,
+    0,
+    4,
+    116,
+    0
+   ],
+   [
+    0,
+    0,
+    2,
+    118,
+    0
+   ],
+   [
+    0,
+    0,
+    1,
+    119,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    119,
+    1
+   ]
+  ],
+  "rules, real centres and scales": [
+   [
+    66,
+    17,
+    12,
+    13,
+    12
+   ],
+   [
+    49,
+    23,
+    18,
+    14,
+    16
+   ],
+   [
+    47,
+    15,
+    14,
+    24,
+    20
+   ],
+   [
+    21,
+    9,
+    16,
+    30,
+    44
+   ],
+   [
+    6,
+    4,
+    7,
+    21,
+    82
+   ]
+  ],
+  "logistic regression": [
+   [
+    58,
+    27,
+    22,
+    10,
+    3
+   ],
+   [
+    47,
+    26,
+    16,
+    16,
+    15
+   ],
+   [
+    31,
+    29,
+    26,
+    29,
+    5
+   ],
+   [
+    11,
+    12,
+    21,
+    52,
+    24
+   ],
+   [
+    2,
+    9,
+    6,
+    19,
+    84
+   ]
+  ]
+ }
+}

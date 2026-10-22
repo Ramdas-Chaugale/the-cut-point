@@ -53,3 +53,6 @@ frontend/public/_test/
 
 # notebook checkpoints
 .ipynb_checkpoints/
+
+# downloaded study images and model weights, rebuilt by experiments/real_face_features.py
+.cache/

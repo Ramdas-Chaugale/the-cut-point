@@ -176,21 +176,102 @@ the model is right and the rules wrong against 54 the other way.
 
 It is also modest. The rules need no training data, can be explained to a user
 in one sentence, and degrade at the same rate as the learned model when the
-landmark detector gets noisier. For a feature whose job is to tell someone why a
-haircut suits them, that explainability is worth more than three points, so the
-rules stay in production. If this were ranking at scale rather than explaining to
-a person, the trade would go the other way.
+landmark detector gets noisier.
 
 **What this does not show.** The faces are generated from the same seven
 prototypes the rules use, with 10% jitter. So it measures whether learned
 boundaries beat hand-set weights on that distribution. It is **not** evidence
-about real photographs, which would need a labelled dataset of real faces this
-project does not have. That limit is written into the results file as well.
+about real photographs. That limit is written into the results file too, and
+the next section is what happened when real photographs were finally measured.
 
 ```bash
 python experiments/face_classifier_study.py     # -> results/face_classifier_study.json
 python experiments/make_classifier_figures.py   # -> the figure above
 ```
+
+---
+
+## What happened on real photographs
+
+The study above could not say anything about real faces. This one can. It takes
+2000 labelled photographs, measures every one with the app's own geometry code,
+and scores the shipped rules against them.
+
+The result is not flattering, which is why it is here.
+
+![the shipped rules on real photographs](docs/figures/real_face_study.png)
+
+| On 600 held-out real faces | Accuracy | |
+|---|---|---|
+| Logistic regression | **0.410** | trained on the same five numbers |
+| Random forest | 0.400 | trained |
+| Small MLP | 0.393 | trained |
+| Rules, prototypes and scales recalibrated | 0.358 | no training at inference |
+| Rules, prototypes recalibrated | 0.330 | no training at inference |
+| **Rules, as shipped** | **0.203** | answers "round" 98% of the time |
+| Always guess the commonest | 0.200 | floor |
+
+**The shipped rules do no better than guessing.** 0.203 against a 0.200 floor,
+and they answer "round" for 98 faces out of 100. On real photographs the
+classifier has collapsed onto one shape.
+
+### Why
+
+The prototypes were set by hand and they sit where no real face sits. A real
+face measures between 1.16 and 1.19 on length to width. The prototypes assume
+that number ranges from 1.05 to 1.75, a span 28 times wider than reality. Every
+per-feature scale is 3 to 7 times too wide as well. So almost every real face
+lands nearest the same prototype and the rule has nothing left to separate.
+
+That part is a bug, and fixing it helps. Rebuilding the prototypes from real
+faces and rescaling to the real spread takes the same rule from 0.203 to 0.358
+(McNemar p = 3e-08).
+
+### The harder finding
+
+Fixing the calibration is not enough. The best trained model on the same five
+measurements reaches 0.410, and a published CNN reading pixels on a version of
+this dataset reaches 0.796.
+
+The reason shows in the third panel. For every one of the five measurements, the
+spread *within* a shape is larger than the spread *between* shapes. Jaw angle is
+the best of them at 0.78 and still below 1.0. Length to width, the measurement
+the whole idea rests on, is the worst at 0.24: heart measures 1.187 and square
+measures 1.165, and individual faces vary far more than that gap.
+
+Five bone-structure ratios are not enough to tell these five shapes apart.
+
+### The caveat that stops this going further
+
+Every image in this dataset is exactly 190x250 pixels. The aspect ratios were
+forced, so each photograph carries an unknown horizontal stretch, and that lands
+hardest on length to width. So this cannot cleanly separate a measurement that is
+genuinely weak from one this dataset damaged. Settling that needs a dataset with
+the original framing kept.
+
+The calibration finding holds either way, because the prototypes are wrong by
+far more than any crop could explain.
+
+### What was changed, and what was not
+
+**Nothing was shipped from this.** The recalibrated prototypes are better on this
+dataset, but they were derived from images with the aspect ratios already broken,
+so putting them into production would trade a known bug for an unmeasured one.
+They stay in the results file until there is a dataset worth trusting.
+
+What it does change is the claim. A face shape returned with a confidence score
+implies a precision these measurements do not have, so that is the part to fix
+first, and it is a product decision rather than a modelling one.
+
+```bash
+python experiments/real_face_features.py --per-class 400  # downloads, measures
+python experiments/real_face_study.py                     # the table above
+python experiments/make_real_study_figures.py             # the figure above
+```
+
+The photographs are of real people and are not redistributed here. The scripts
+download them to `.cache/`, which is git-ignored, and only the derived
+measurements are committed.
 
 ---
 
