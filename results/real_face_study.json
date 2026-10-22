@@ -416,6 +416,42 @@
    "small MLP": 0.4086242299794661
   }
  },
+ "confidence_shown_to_user": {
+  "mean": 0.443,
+  "median": 0.445,
+  "min": 0.246,
+  "max": 0.741,
+  "by_quartile": [
+   {
+    "from": 0.246,
+    "to": 0.404,
+    "n": 500,
+    "accuracy": 0.198
+   },
+   {
+    "from": 0.404,
+    "to": 0.445,
+    "n": 500,
+    "accuracy": 0.184
+   },
+   {
+    "from": 0.445,
+    "to": 0.482,
+    "n": 500,
+    "accuracy": 0.23
+   },
+   {
+    "from": 0.482,
+    "to": 0.741,
+    "n": 500,
+    "accuracy": 0.2
+   }
+  ],
+  "spread_across_bins": 0.046,
+  "informative": false,
+  "shown_over_50_percent": 349,
+  "of_those_correct": 0.189
+ },
  "confusion": {
   "labels": [
    "heart",

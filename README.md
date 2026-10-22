@@ -252,6 +252,24 @@ the original framing kept.
 The calibration finding holds either way, because the prototypes are wrong by
 far more than any crop could explain.
 
+### The part a user actually sees
+
+The app does not just return a shape. It returns a confidence score, and the
+interface shows it. So the last check was whether that number means anything.
+
+| Told the app is this confident | How often it is right | Faces |
+|---|---|---|
+| 0.25 to 0.40 | 0.198 | 500 |
+| 0.40 to 0.45 | 0.184 | 500 |
+| 0.45 to 0.48 | 0.230 | 500 |
+| 0.48 to 0.74 | 0.200 | 500 |
+
+Accuracy is flat at about 0.20 whatever the score says. The confidence number
+carries no information. 349 of the 2000 faces are told the app is more than 50%
+sure, and on those it is right 18.9% of the time.
+
+That is the finding with a person on the other end of it.
+
 ### What was changed, and what was not
 
 **Nothing was shipped from this.** The recalibrated prototypes are better on this
@@ -259,9 +277,11 @@ dataset, but they were derived from images with the aspect ratios already broken
 so putting them into production would trade a known bug for an unmeasured one.
 They stay in the results file until there is a dataset worth trusting.
 
-What it does change is the claim. A face shape returned with a confidence score
-implies a precision these measurements do not have, so that is the part to fix
-first, and it is a product decision rather than a modelling one.
+The repair that does not depend on a better dataset is the claim itself. Showing
+a confident single shape is not supportable at 0.20 accuracy with an
+uninformative score. Showing the measurements, saying which two shapes the face
+sits between, and dropping the number would be honest with exactly the evidence
+available today.
 
 ```bash
 python experiments/real_face_features.py --per-class 400  # downloads, measures

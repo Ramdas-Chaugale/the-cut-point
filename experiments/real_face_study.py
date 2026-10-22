@@ -194,6 +194,55 @@ def acc(pred: np.ndarray, true: np.ndarray) -> float:
     return float((pred == true).mean())
 
 
+def confidence_check(X: np.ndarray, y: np.ndarray) -> dict:
+    """Does the confidence the app shows a user mean anything?
+
+    classify() turns the prototype distances into a softmax score and the
+    interface shows it. A score is only worth showing if a higher one is right
+    more often. This bins real faces by the score they were given and reports
+    accuracy in each bin. Flat bins mean the number is decoration.
+    """
+    import math
+
+    conf, correct = [], []
+    for fv, true in zip(X, y):
+        logits = {s: -0.5 * fc._weighted_sq_distance(tuple(fv), p)
+                  for s, p in fc.PROTOTYPES.items()}
+        top = max(logits.values())
+        exp = {s: math.exp(v - top) for s, v in logits.items()}
+        denom = sum(exp.values())
+        scores = {s: v / denom for s, v in exp.items()}
+        best = max(scores, key=scores.get)
+        conf.append(scores[best])
+        correct.append(best == true)
+
+    conf = np.array(conf)
+    correct = np.array(correct)
+    edges = np.quantile(conf, [0, 0.25, 0.5, 0.75, 1.0])
+    bins = []
+    for i in range(4):
+        m = (conf >= edges[i]) & (conf <= edges[i + 1])
+        bins.append({"from": round(float(edges[i]), 3),
+                     "to": round(float(edges[i + 1]), 3),
+                     "n": int(m.sum()),
+                     "accuracy": round(float(correct[m].mean()), 3)})
+
+    over_half = conf > 0.5
+    accs = [b["accuracy"] for b in bins]
+    return {
+        "mean": round(float(conf.mean()), 3),
+        "median": round(float(np.median(conf)), 3),
+        "min": round(float(conf.min()), 3),
+        "max": round(float(conf.max()), 3),
+        "by_quartile": bins,
+        "spread_across_bins": round(max(accs) - min(accs), 3),
+        "informative": bool(max(accs) - min(accs) > 0.10),
+        "shown_over_50_percent": int(over_half.sum()),
+        "of_those_correct": (round(float(correct[over_half].mean()), 3)
+                             if over_half.any() else None),
+    }
+
+
 def main() -> None:
     X, y, frontal, sizes = load()
     print("measured faces: %d" % len(X))
@@ -369,6 +418,24 @@ def main() -> None:
         for name, a in sorted(out["frontal_only"]["accuracy"].items(),
                               key=lambda kv: -kv[1]):
             print("  %-36s %.3f" % (name, a))
+
+    # ---- the number the user actually sees -------------------------------
+    cc = confidence_check(X, y)
+    out["confidence_shown_to_user"] = cc
+    print("\nthe confidence score the app shows, on all %d real faces" % len(X))
+    print("  reported confidence runs %.2f to %.2f, mean %.2f"
+          % (cc["min"], cc["max"], cc["mean"]))
+    for b in cc["by_quartile"]:
+        print("    told %.2f to %.2f confident : right %.3f of the time (n=%d)"
+              % (b["from"], b["to"], b["accuracy"], b["n"]))
+    print("  accuracy spread across those bins: %.3f -> %s"
+          % (cc["spread_across_bins"],
+             "the score carries information"
+             if cc["informative"] else "the score carries no information"))
+    if cc["of_those_correct"] is not None:
+        print("  %d faces are told the app is over 50%% sure. It is right %.1f%% "
+              "of the time." % (cc["shown_over_50_percent"],
+                                100 * cc["of_those_correct"]))
 
     # ---- confusion, for the three that matter ----------------------------
     out["confusion"] = {"labels": CLASSES}
