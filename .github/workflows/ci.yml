@@ -1,9 +1,10 @@
 name: CI
 
-# Runs once the repo is pushed to GitHub (Phase 10). Local builds don't need it.
 on:
   push:
-    branches: [main]
+    # This repo's default branch is master. Listing main as well so the
+    # workflow still fires if the branch is ever renamed.
+    branches: [master, main]
   pull_request:
 
 jobs:
