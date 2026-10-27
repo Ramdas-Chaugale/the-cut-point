@@ -12,6 +12,35 @@ client = TestClient(app)
 _IMG = "data:image/jpeg;base64," + "A" * 64
 
 
+class _FakeSettings:
+    """Just the fields tryon.py reads, with the fal path switched on.
+
+    generate_tryon checks settings.fal_key directly, so mocking _run_fal alone
+    is not enough: the function raises before it ever gets there. Without this
+    the tests only pass on a machine that happens to have a real fal.ai key
+    configured, which is the opposite of what a mocked test should do.
+
+    Cloudflare is off here so the fal branch is the one under test. The
+    inpainting tests turn it on themselves.
+    """
+
+    ai_tryon_enabled = True
+    fal_key = "test-key-not-a-real-one"
+    fal_model = "fal-ai/test-model"
+    cloudflare_enabled = False
+    cloudflare_account_id = "test-account"
+    cloudflare_api_token = "test-token"
+    cloudflare_inpaint_model = "test-inpaint-model"
+
+
+@pytest.fixture(autouse=True)
+def _settings(monkeypatch: pytest.MonkeyPatch) -> _FakeSettings:
+    """Every test in this file runs against the fake settings, never real keys."""
+    fake = _FakeSettings()
+    monkeypatch.setattr(tryon, "get_settings", lambda: fake)
+    return fake
+
+
 def test_build_prompt_known_style() -> None:
     prompt = tryon.build_prompt("high-fade-pompadour")
     assert "Pompadour" in prompt

@@ -22,7 +22,9 @@ line-length = 100
 target-version = ["py311"]
 
 [tool.mypy]
-python_version = "3.11"
+# Matches the venv and CI. Left at 3.11 it rejected numpy's own stubs, which
+# use syntax only valid from 3.12, and stopped before checking any of our code.
+python_version = "3.13"
 plugins = ["pydantic.mypy"]
 ignore_missing_imports = true
 warn_unused_ignores = true

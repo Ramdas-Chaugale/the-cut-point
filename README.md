@@ -7,13 +7,13 @@
 Upload a photo, get your face shape from facial geometry, see styles that suit it from four angles,
 try one on your own photo, then find a nearby salon and book.
 
-[![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![CI](https://github.com/Ramdas-Chaugale/the-cut-point/actions/workflows/ci.yml/badge.svg)](https://github.com/Ramdas-Chaugale/the-cut-point/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/Python-3.13-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Tests](https://img.shields.io/badge/tests-139%20passing-1b6b4a)](#testing)
-[![CI](https://img.shields.io/badge/CI-Ruff%20%7C%20Black%20%7C%20Mypy%20%7C%20Pytest-2f6fb8)](.github/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
 
 </div>
