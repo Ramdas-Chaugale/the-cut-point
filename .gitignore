@@ -56,3 +56,8 @@ frontend/public/_test/
 
 # downloaded study images and model weights, rebuilt by experiments/real_face_features.py
 .cache/
+.neon
+
+# scratch files that can hold credentials
+.neon-*
+*.env.bak-*
