@@ -4,9 +4,13 @@
 
 **Face shape analysis, hairstyle recommendation and salon booking.**
 
+**Live: [cutpoint-cyan.vercel.app](https://cutpoint-cyan.vercel.app)** &nbsp;·&nbsp; [API docs](https://cutpoint-api.vercel.app/docs)
+
 Upload a photo, get your face shape from facial geometry, see styles that suit it from four angles,
 try one on your own photo, then find a nearby salon and book.
 
+[![Live demo](https://img.shields.io/badge/live%20demo-cutpoint--cyan.vercel.app-1b6b4a)](https://cutpoint-cyan.vercel.app)
+[![API](https://img.shields.io/badge/API%20docs-cutpoint--api.vercel.app-009688)](https://cutpoint-api.vercel.app/docs)
 [![CI](https://github.com/Ramdas-Chaugale/the-cut-point/actions/workflows/ci.yml/badge.svg)](https://github.com/Ramdas-Chaugale/the-cut-point/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.13-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
