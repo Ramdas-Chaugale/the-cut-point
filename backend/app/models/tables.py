@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from datetime import datetime, time
 
+from sqlalchemy import DateTime
 from sqlmodel import Field, SQLModel
 
 # Booking lifecycle statuses.
@@ -91,3 +92,22 @@ class Booking(SQLModel, table=True):
     # Set when the salon declines and proposes another time.
     suggested_start_at: datetime | None = Field(default=None)
     created_at: datetime = Field(default_factory=_now)
+
+
+class RateLimit(SQLModel, table=True):
+    """One row per caller per window. See app/services/ratelimit.py.
+
+    The primary key is the whole triple so the increment can be a single
+    atomic upsert rather than a read then a write.
+    """
+
+    __tablename__ = "rate_limits"
+
+    bucket: str = Field(primary_key=True)        # which endpoint is limited
+    client_key: str = Field(primary_key=True)    # caller, usually an IP
+    # timezone aware on purpose: the window is computed in UTC and comparing an
+    # aware value against a naive column raises rather than quietly drifting.
+    window_start: datetime = Field(
+        primary_key=True, sa_type=DateTime(timezone=True)
+    )
+    hits: int = 1
