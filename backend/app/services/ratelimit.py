@@ -50,8 +50,7 @@ def _window_start(now: datetime, seconds: int) -> datetime:
     return datetime.fromtimestamp(epoch - (epoch % seconds), tz=UTC)
 
 
-def check(session: Session, bucket: str, key: str, limit: int,
-          window_seconds: int) -> Decision:
+def check(session: Session, bucket: str, key: str, limit: int, window_seconds: int) -> Decision:
     """Count this request and say whether it is over the limit."""
     now = datetime.now(UTC)
     start = _window_start(now, window_seconds)

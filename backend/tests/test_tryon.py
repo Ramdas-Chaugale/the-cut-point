@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import pytest
+from app.core.db import get_session
 from app.main import app
 from app.services import tryon
 from fastapi.testclient import TestClient
+from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel.pool import StaticPool
 
 client = TestClient(app)
 
@@ -39,6 +42,27 @@ def _settings(monkeypatch: pytest.MonkeyPatch) -> _FakeSettings:
     fake = _FakeSettings()
     monkeypatch.setattr(tryon, "get_settings", lambda: fake)
     return fake
+
+
+@pytest.fixture(autouse=True)
+def _isolated_db():
+    """Count the rate limiter in memory, never in the configured database.
+
+    The try-on route counts every call in a table. Without this the endpoint
+    tests below count against whatever database the app is pointed at, which
+    means a test run writes rows to the real one and starts returning 429 to
+    itself once the hour's allowance is used up.
+    """
+    engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SQLModel.metadata.create_all(engine)
+    with Session(engine) as s:
+        app.dependency_overrides[get_session] = lambda: s
+        yield
+        app.dependency_overrides.clear()
 
 
 def test_build_prompt_known_style() -> None:

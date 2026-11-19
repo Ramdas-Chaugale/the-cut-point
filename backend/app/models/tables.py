@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from datetime import datetime, time
 
-from sqlalchemy import DateTime
+from sqlalchemy import Column, DateTime
 from sqlmodel import Field, SQLModel
 
 # Booking lifecycle statuses.
@@ -103,11 +103,9 @@ class RateLimit(SQLModel, table=True):
 
     __tablename__ = "rate_limits"
 
-    bucket: str = Field(primary_key=True)        # which endpoint is limited
-    client_key: str = Field(primary_key=True)    # caller, usually an IP
+    bucket: str = Field(primary_key=True)  # which endpoint is limited
+    client_key: str = Field(primary_key=True)  # caller, usually an IP
     # timezone aware on purpose: the window is computed in UTC and comparing an
     # aware value against a naive column raises rather than quietly drifting.
-    window_start: datetime = Field(
-        primary_key=True, sa_type=DateTime(timezone=True)
-    )
+    window_start: datetime = Field(sa_column=Column(DateTime(timezone=True), primary_key=True))
     hits: int = 1

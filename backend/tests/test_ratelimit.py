@@ -52,6 +52,7 @@ def _post(c: TestClient, ip: str):
 
 # --- the counter itself ------------------------------------------------------
 
+
 def test_counts_down_then_blocks(session: Session) -> None:
     for expected_remaining in (2, 1, 0):
         d = ratelimit.check(session, bucket="b", key="1.2.3.4", limit=3, window_seconds=60)
@@ -87,6 +88,7 @@ def test_sweep_drops_old_windows(session: Session) -> None:
 
 # --- the route ---------------------------------------------------------------
 
+
 def test_route_allows_up_to_the_limit(client: TestClient) -> None:
     for _ in range(route.TRYON_LIMIT):
         assert _post(client, "198.51.100.1").status_code == 200
@@ -106,9 +108,9 @@ def test_route_limit_is_per_caller(client: TestClient) -> None:
     for _ in range(route.TRYON_LIMIT):
         _post(client, "198.51.100.3")
 
-    assert _post(client, "198.51.100.4").status_code == 200, (
-        "exhausting one IP must not lock out everyone else"
-    )
+    assert (
+        _post(client, "198.51.100.4").status_code == 200
+    ), "exhausting one IP must not lock out everyone else"
 
 
 def test_remaining_header_counts_down(client: TestClient) -> None:
